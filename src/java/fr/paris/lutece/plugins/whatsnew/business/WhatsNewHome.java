@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2009, Mairie de Paris
+ * Copyright (c) 2002-2010, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,22 +33,29 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business;
 
+import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 import java.sql.Timestamp;
 
 import java.util.Collection;
+import java.util.Locale;
 
 
 /**
- * This class provides instances management methods (create, find, ...) for WhatsNew objects.
+ * 
+ * WhatsNewHome
+ * 
  */
 public final class WhatsNewHome
 {
     // Static variable pointed at the DAO instance
-    private static IWhatsNewDAO _dao = (IWhatsNewDAO) SpringContextService.getPluginBean( "whatsnew", "whatsNewDAO" );
+    private static IWhatsNewDAO _dao = (IWhatsNewDAO) SpringContextService.getPluginBean( "whatsnew",
+            "whatsnew.whatsNewDAO" );
 
-    /** construtor */
+    /** Constructor */
     private WhatsNewHome(  )
     {
     }
@@ -56,33 +63,35 @@ public final class WhatsNewHome
     /**
      * Returns the list of the articles which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
-     *
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    public static Collection selectDocumentsByCriterias( Timestamp dateLimit )
+    public static Collection<IWhatsNew> selectDocumentsByCriterias( Timestamp dateLimit, Locale locale )
     {
-        return _dao.selectDocumentsByCriterias( dateLimit );
+        Plugin pluginDocument = PluginService.getPlugin( WhatsNewConstants.DOCUMENT_PLUGIN_NAME );
+
+        return _dao.selectDocumentsByCriterias( dateLimit, pluginDocument, locale );
     }
 
     /**
      * Returns the list of the portlets which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
-     *
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    public static Collection selectPortletsByCriterias( Timestamp dateLimit )
+    public static Collection<IWhatsNew> selectPortletsByCriterias( Timestamp dateLimit, Locale locale )
     {
-        return _dao.selectPortletsByCriterias( dateLimit );
+        return _dao.selectPortletsByCriterias( dateLimit, locale );
     }
 
     /**
      * Returns the list of the pages which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
-     *
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    public static Collection selectPagesByCriterias( Timestamp dateLimit )
+    public static Collection<IWhatsNew> selectPagesByCriterias( Timestamp dateLimit, Locale locale )
     {
-        return _dao.selectPagesByCriterias( dateLimit );
+        return _dao.selectPagesByCriterias( dateLimit, locale );
     }
 }

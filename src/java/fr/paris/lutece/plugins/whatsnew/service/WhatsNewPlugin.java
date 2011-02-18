@@ -31,41 +31,27 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business.portlet;
+package fr.paris.lutece.plugins.whatsnew.service;
 
-import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
-import fr.paris.lutece.portal.business.portlet.Portlet;
+import fr.paris.lutece.plugins.whatsnew.service.portlet.WhatsNewPortletService;
+import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 
 
 /**
  * 
- * IWhatsNewPortletDAO
+ * WhatsNewPlugin
  * 
  */
-public interface IWhatsNewPortletDAO extends IPortletInterfaceDAO
+public class WhatsNewPlugin extends PluginDefaultImplementation
 {
-    /**
-     * Delete a record from the table
-     * @param nPortletId The identifier of the portlet
-     */
-    void delete( int nPortletId );
+    public static final String PLUGIN_NAME = "whatsnew";
 
     /**
-     * Insert a new record in the table whatsnew_portlet
-     * @param portlet the instance of the Portlet object to insert
+     * Initialize the plugin whatsnew
      */
-    void insert( Portlet portlet );
-
-    /**
-     * Loads the data of What's new Portlet whose identifier is specified in parameter
-     * @param nPortletId The Portlet identifier
-     * @return the whatsNew object
-     */
-    Portlet load( int nPortletId );
-
-    /**
-     * Update the record in the table
-     * @param portlet The instance of the object portlet
-     */
-    void store( Portlet portlet );
+    public void init(  )
+    {
+        WhatsNewService.getInstance(  ).init(  );
+        WhatsNewPortletService.getInstance(  ).init(  );
+    }
 }

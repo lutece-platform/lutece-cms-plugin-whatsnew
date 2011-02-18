@@ -33,211 +33,124 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business;
 
-import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
-import fr.paris.lutece.util.date.DateUtil;
-import fr.paris.lutece.util.xml.XmlUtil;
-
-import org.apache.commons.lang.StringUtils;
+import fr.paris.lutece.portal.business.XmlContent;
 
 import java.sql.Timestamp;
+
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * 
- * WhatsNew
- *  
+ *
+ * IWhatsNew
+ *
  */
-public abstract class WhatsNew implements IWhatsNew
+public interface IWhatsNew extends XmlContent
 {
-    private WhatsNewType _whatsNewType;
-
-    /** Title of the whatsnew object */
-    private String _strTitle;
-
-    /** Description of the whatsnew object */
-    private String _strDescription;
-
-    /** Date of the last update */
-    private Timestamp _dateUpdate;
-
-    /** ids that are used to build the url to the element */
-    private int _nPageId;
-    private int _nPortletId;
-    private int _nDocumentId;
-
     /**
-     * Creates a new WhatsNew object.
-     */
-    public WhatsNew(  )
-    {
-    }
-
-    /**
-     * Returns the type of the whatsnew object
-     * @return the type of the whatsnew object
-     */
-    public WhatsNewType getWhatsNewType(  )
-    {
-        return _whatsNewType;
-    }
+    * Returns the type of the whatsnew object
+    * @return the type of the whatsnew object
+    */
+    WhatsNewType getWhatsNewType(  );
 
     /**
      * Returns the title of the whatsnew object
      * @return the title of the whatsnew object
      */
-    public String getTitle(  )
-    {
-        return _strTitle;
-    }
+    String getTitle(  );
 
     /**
      * Returns the description of the whatsnew object
      * @return the description of the whatsnew object
      */
-    public String getDescription(  )
-    {
-        return _strDescription;
-    }
+    String getDescription(  );
 
     /**
      * Returns the date of the last update of the whatsnew object
      * @return the date of the last update of the whatsnew object
      */
-    public Timestamp getDateUpdate(  )
-    {
-        return _dateUpdate;
-    }
+    Timestamp getDateUpdate(  );
 
     /**
      * Sets the type of the whatsnew object to the specified String
      * @param whatsNewType the new type of the whatsnew object
      */
-    public void setWhatsNewType( WhatsNewType whatsNewType )
-    {
-        _whatsNewType = whatsNewType;
-    }
+    void setWhatsNewType( WhatsNewType whatsNewType );
+
+    /**
+     * Set the whatsnew type
+     * @param locale {@link Locale}
+     */
+    void setWhatsNewType( Locale locale );
 
     /**
      * Sets the title of the whatsnew object to the specified String
      * @param strTitle the new title of the whatsnew object
      */
-    public void setTitle( String strTitle )
-    {
-        _strTitle = strTitle;
-    }
+    void setTitle( String strTitle );
 
     /**
      * Sets the description of the whatsnew object to the specified String
      * @param strDescription the new description of the whatsnew object
      */
-    public void setDescription( String strDescription )
-    {
-        _strDescription = strDescription;
-    }
+    void setDescription( String strDescription );
 
     /**
      * Sets the date of the last update of the whatsnew object
      * @param date the date update of the whatsnew object
      */
-    public void setDateUpdate( Timestamp date )
-    {
-        _dateUpdate = date;
-    }
+    void setDateUpdate( Timestamp date );
 
     /**
-     * Get the document ID
      * @return Returns the _nDocumentId.
      */
-    public int getDocumentId(  )
-    {
-        return _nDocumentId;
-    }
+    int getDocumentId(  );
 
     /**
      * Set the document ID
      * @param nDocumentId The _nDocumentId to set.
      */
-    public void setDocumentId( int nDocumentId )
-    {
-        _nDocumentId = nDocumentId;
-    }
+    void setDocumentId( int nDocumentId );
 
     /**
-     * Get the page ID
      * @return Returns the _nPageId.
      */
-    public int getPageId(  )
-    {
-        return _nPageId;
-    }
+    int getPageId(  );
 
     /**
-     * Set the page ID
      * @param nPageId The _nPageId to set.
      */
-    public void setPageId( int nPageId )
-    {
-        _nPageId = nPageId;
-    }
+    void setPageId( int nPageId );
 
     /**
-     * Get the portlet ID
      * @return Returns the _nPortletId.
      */
-    public int getPortletId(  )
-    {
-        return _nPortletId;
-    }
+    int getPortletId(  );
 
     /**
-     * Set the portlet ID
      * @param nPortletId The _nPortletId to set.
      */
-    public void setPortletId( int nPortletId )
-    {
-        _nPortletId = nPortletId;
-    }
+    void setPortletId( int nPortletId );
 
-    /////////////////////////////////////////////////////////////////////////////
-    // XML generation
+    /**
+     * Build the url of the whatsnew
+     * @return the url
+     */
+    String buildUrl(  );
 
     /**
      * Adds the XML header to the XML content of this whatsnew object and returns it
      * @param request The HTTP Servlet request
      * @return the Xml document with header
      */
-    public String getXmlDocument( HttpServletRequest request )
-    {
-        return XmlUtil.getXmlHeader(  ) + getXml( request );
-    }
+    String getXmlDocument( HttpServletRequest request );
 
     /**
      * Builds the XML content of this whatsnew object and returns it
      * @param request The HTTP Servlet request
      * @return the Xml content of this whatsnew object
      */
-    public String getXml( HttpServletRequest request )
-    {
-        StringBuffer strXml = new StringBuffer(  );
-        XmlUtil.beginElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_ELEMENT );
-
-        XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_TYPE, getWhatsNewType(  ).getName(  ) );
-        XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_TITLE, getTitle(  ) );
-
-        if ( StringUtils.isNotBlank( getDescription(  ) ) )
-        {
-            XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_DESCRIPTION, getDescription(  ) );
-        }
-
-        XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_DATE_UPDATE,
-            DateUtil.getDateString( getDateUpdate(  ), request.getLocale(  ) ) );
-
-        XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_URL, buildUrl(  ) );
-
-        XmlUtil.endElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_ELEMENT );
-
-        return strXml.toString(  );
-    }
+    String getXml( HttpServletRequest request );
 }

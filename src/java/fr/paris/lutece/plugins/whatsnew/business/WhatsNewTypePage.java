@@ -31,41 +31,53 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business.portlet;
+package fr.paris.lutece.plugins.whatsnew.business;
 
-import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
-import fr.paris.lutece.portal.business.portlet.Portlet;
+import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
+import fr.paris.lutece.portal.web.constants.Parameters;
+
+import java.util.Locale;
 
 
 /**
- * 
- * IWhatsNewPortletDAO
- * 
+ *
+ * WhatsNewTypePage
+ *
  */
-public interface IWhatsNewPortletDAO extends IPortletInterfaceDAO
+public class WhatsNewTypePage extends WhatsNew
 {
     /**
-     * Delete a record from the table
-     * @param nPortletId The identifier of the portlet
+     * Constructor
      */
-    void delete( int nPortletId );
+    public WhatsNewTypePage(  )
+    {
+    }
 
     /**
-     * Insert a new record in the table whatsnew_portlet
-     * @param portlet the instance of the Portlet object to insert
-     */
-    void insert( Portlet portlet );
+    * Set the whatsnew type
+    * @param locale {@link Locale}
+    */
+    public void setWhatsNewType( Locale locale )
+    {
+        WhatsNewType whatsNewType = new WhatsNewType(  );
+        whatsNewType.setLocale( locale );
+        whatsNewType.setClassName( this.getClass(  ).getName(  ) );
+        whatsNewType.setLabelType( WhatsNewConstants.PROPERTY_TYPE_PAGE );
+        setWhatsNewType( whatsNewType );
+    }
 
     /**
-     * Loads the data of What's new Portlet whose identifier is specified in parameter
-     * @param nPortletId The Portlet identifier
-     * @return the whatsNew object
-     */
-    Portlet load( int nPortletId );
+    * Build the url of the whatsnew
+    * @return the url
+    */
+    public String buildUrl(  )
+    {
+        StringBuilder sbUrl = new StringBuilder(  );
+        sbUrl.append( WhatsNewConstants.INTERROGATION_MARK );
+        sbUrl.append( Parameters.PAGE_ID );
+        sbUrl.append( WhatsNewConstants.EQUAL );
+        sbUrl.append( getPageId(  ) );
 
-    /**
-     * Update the record in the table
-     * @param portlet The instance of the object portlet
-     */
-    void store( Portlet portlet );
+        return sbUrl.toString(  );
+    }
 }

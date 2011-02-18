@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2009, Mairie de Paris
+ * Copyright (c) 2002-2010, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,21 +33,22 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business.portlet;
 
-import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
 import fr.paris.lutece.portal.business.portlet.Portlet;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 
 /**
- * This class provides Data Access methods for WhatsNewPortlet objects
+ * 
+ * WhatsNewPortletDAO
+ * 
  */
 public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
 {
     // Whatsnew queries
-    private static final String SQL_QUERY_INSERT = "INSERT INTO whatsnew_portlet (id_portlet, show_documents, show_portlets, show_pages, period, nb_elements_max, elements_order) VALUES ( ?,?,?,?,?,?,? )";
-    private static final String SQL_QUERY_DELETE = "DELETE FROM whatsnew_portlet WHERE id_portlet = ?";
-    private static final String SQL_QUERY_SELECT = "SELECT id_portlet, show_documents, show_portlets, show_pages, period, nb_elements_max, elements_order FROM whatsnew_portlet WHERE id_portlet = ?";
-    private static final String SQL_QUERY_UPDATE = "UPDATE whatsnew_portlet SET show_documents = ?, show_portlets = ?, show_pages = ?, period = ?, nb_elements_max = ?, elements_order = ? WHERE id_portlet = ?";
+    private static final String SQL_QUERY_INSERT = " INSERT INTO whatsnew_portlet (id_portlet, show_documents, show_portlets, show_pages, period, nb_elements_max, elements_order, is_asc_sort) VALUES ( ?,?,?,?,?,?,?,? ) ";
+    private static final String SQL_QUERY_DELETE = " DELETE FROM whatsnew_portlet WHERE id_portlet = ? ";
+    private static final String SQL_QUERY_SELECT = " SELECT id_portlet, show_documents, show_portlets, show_pages, period, nb_elements_max, elements_order, is_asc_sort FROM whatsnew_portlet WHERE id_portlet = ? ";
+    private static final String SQL_QUERY_UPDATE = " UPDATE whatsnew_portlet SET show_documents = ?, show_portlets = ?, show_pages = ?, period = ?, nb_elements_max = ?, elements_order = ?, is_asc_sort = ? WHERE id_portlet = ? ";
 
     ///////////////////////////////////////////////////////////////////////////////////////
     //Access methods to data
@@ -62,38 +63,16 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
         WhatsNewPortlet p = (WhatsNewPortlet) portlet;
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT );
-        daoUtil.setInt( 1, p.getId(  ) );
+        int nIndex = 1;
 
-        if ( p.getShowDocuments(  ) )
-        {
-            daoUtil.setInt( 2, 1 );
-        }
-        else
-        {
-            daoUtil.setInt( 2, 0 );
-        }
-
-        if ( p.getShowPortlets(  ) )
-        {
-            daoUtil.setInt( 3, 1 );
-        }
-        else
-        {
-            daoUtil.setInt( 3, 0 );
-        }
-
-        if ( p.getShowPages(  ) )
-        {
-            daoUtil.setInt( 4, 1 );
-        }
-        else
-        {
-            daoUtil.setInt( 4, 0 );
-        }
-
-        daoUtil.setInt( 5, p.getPeriod(  ) );
-        daoUtil.setInt( 6, p.getNbElementsMax(  ) );
-        daoUtil.setInt( 7, p.getElementsOrder(  ) );
+        daoUtil.setInt( nIndex++, p.getId(  ) );
+        daoUtil.setBoolean( nIndex++, p.getShowDocuments(  ) );
+        daoUtil.setBoolean( nIndex++, p.getShowPortlets(  ) );
+        daoUtil.setBoolean( nIndex++, p.getShowPages(  ) );
+        daoUtil.setInt( nIndex++, p.getPeriod(  ) );
+        daoUtil.setInt( nIndex++, p.getNbElementsMax(  ) );
+        daoUtil.setInt( nIndex++, p.getElementsOrder(  ) );
+        daoUtil.setBoolean( nIndex++, p.getAscSort(  ) );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );
@@ -127,40 +106,18 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
 
         WhatsNewPortlet portlet = new WhatsNewPortlet(  );
 
+        int nIndex = 1;
+
         if ( daoUtil.next(  ) )
         {
-            portlet.setId( daoUtil.getInt( 1 ) );
-
-            if ( daoUtil.getInt( 2 ) == 0 )
-            {
-                portlet.setShowDocuments( false );
-            }
-            else
-            {
-                portlet.setShowDocuments( true );
-            }
-
-            if ( daoUtil.getInt( 3 ) == 0 )
-            {
-                portlet.setShowPortlets( false );
-            }
-            else
-            {
-                portlet.setShowPortlets( true );
-            }
-
-            if ( daoUtil.getInt( 4 ) == 0 )
-            {
-                portlet.setShowPages( false );
-            }
-            else
-            {
-                portlet.setShowPages( true );
-            }
-
-            portlet.setPeriod( daoUtil.getInt( 5 ) );
-            portlet.setNbElementsMax( daoUtil.getInt( 6 ) );
-            portlet.setElementsOrder( daoUtil.getInt( 7 ) );
+            portlet.setId( daoUtil.getInt( nIndex++ ) );
+            portlet.setShowDocuments( daoUtil.getBoolean( nIndex++ ) );
+            portlet.setShowPortlets( daoUtil.getBoolean( nIndex++ ) );
+            portlet.setShowPages( daoUtil.getBoolean( nIndex++ ) );
+            portlet.setPeriod( daoUtil.getInt( nIndex++ ) );
+            portlet.setNbElementsMax( daoUtil.getInt( nIndex++ ) );
+            portlet.setElementsOrder( daoUtil.getInt( nIndex++ ) );
+            portlet.setAscSort( daoUtil.getBoolean( nIndex++ ) );
         }
 
         daoUtil.free(  );
@@ -178,38 +135,17 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
         WhatsNewPortlet p = (WhatsNewPortlet) portlet;
 
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE );
+        int nIndex = 1;
 
-        if ( p.getShowDocuments(  ) )
-        {
-            daoUtil.setInt( 1, 1 );
-        }
-        else
-        {
-            daoUtil.setInt( 1, 0 );
-        }
+        daoUtil.setBoolean( nIndex++, p.getShowDocuments(  ) );
+        daoUtil.setBoolean( nIndex++, p.getShowPortlets(  ) );
+        daoUtil.setBoolean( nIndex++, p.getShowPages(  ) );
+        daoUtil.setInt( nIndex++, p.getPeriod(  ) );
+        daoUtil.setInt( nIndex++, p.getNbElementsMax(  ) );
+        daoUtil.setInt( nIndex++, p.getElementsOrder(  ) );
+        daoUtil.setBoolean( nIndex++, p.getAscSort(  ) );
 
-        if ( p.getShowPortlets(  ) )
-        {
-            daoUtil.setInt( 2, 1 );
-        }
-        else
-        {
-            daoUtil.setInt( 2, 0 );
-        }
-
-        if ( p.getShowPages(  ) )
-        {
-            daoUtil.setInt( 3, 1 );
-        }
-        else
-        {
-            daoUtil.setInt( 3, 0 );
-        }
-
-        daoUtil.setInt( 4, p.getPeriod(  ) );
-        daoUtil.setInt( 5, p.getNbElementsMax(  ) );
-        daoUtil.setInt( 6, p.getElementsOrder(  ) );
-        daoUtil.setInt( 7, p.getId(  ) );
+        daoUtil.setInt( nIndex++, p.getId(  ) );
 
         daoUtil.executeUpdate(  );
         daoUtil.free(  );

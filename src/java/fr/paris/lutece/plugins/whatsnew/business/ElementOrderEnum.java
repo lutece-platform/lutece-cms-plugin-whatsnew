@@ -31,41 +31,35 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business.portlet;
-
-import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
-import fr.paris.lutece.portal.business.portlet.Portlet;
+package fr.paris.lutece.plugins.whatsnew.business;
 
 
 /**
  * 
- * IWhatsNewPortletDAO
+ * ElementOrderEnum
  * 
  */
-public interface IWhatsNewPortletDAO extends IPortletInterfaceDAO
-{
-    /**
-     * Delete a record from the table
-     * @param nPortletId The identifier of the portlet
-     */
-    void delete( int nPortletId );
+public enum ElementOrderEnum
+{DATE( 0 ),
+    ALPHA( 1 );
+
+    private int _nId;
 
     /**
-     * Insert a new record in the table whatsnew_portlet
-     * @param portlet the instance of the Portlet object to insert
+     * Constructor.
+     * @param nId the ID
      */
-    void insert( Portlet portlet );
+    ElementOrderEnum( int nId )
+    {
+        _nId = nId;
+    }
 
     /**
-     * Loads the data of What's new Portlet whose identifier is specified in parameter
-     * @param nPortletId The Portlet identifier
-     * @return the whatsNew object
+     * Renvoie l'identifiant
+     * @return l'identifiant
      */
-    Portlet load( int nPortletId );
-
-    /**
-     * Update the record in the table
-     * @param portlet The instance of the object portlet
-     */
-    void store( Portlet portlet );
+    public int getId(  )
+    {
+        return _nId;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2009, Mairie de Paris
+ * Copyright (c) 2002-2010, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business;
 
+import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
 
 import java.sql.Timestamp;
@@ -40,47 +41,57 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 
 /**
- * This class provides Data Access methods for What's New objects
+ * 
+ * WhatsNewDAO
+ * 
  */
 public class WhatsNewDAO implements IWhatsNewDAO
 {
-    ////////////////////////////////////////////////////////////////////////////
-    // WhatsNew queries
-    private static final String SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS = "SELECT a.title, a.document_summary as description, a.date_modification, a.id_document, b.id_portlet FROM document a, document_published b WHERE (a.id_document=b.id_document) AND (a.date_modification between ? AND ?) AND (a.date_validity_begin is null or ?>a.date_validity_begin) AND (a.date_validity_end is null or ?<a.date_validity_end)";
-    private static final String SQL_QUERY_SELECT_PORTLETS_BY_CRITERIAS = "SELECT a.name as title,'',a.date_update, a.id_page, a.id_portlet FROM core_portlet a WHERE a.date_update between ? AND ?";
-    private static final String SQL_QUERY_SELECT_PAGES_BY_CRITERIAS = "SELECT a.name as title, a.description, a.date_update, a.id_page FROM core_page a WHERE a.date_update between ? AND ?";
+    private static final String SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS = " SELECT a.title, a.document_summary as description, a.date_modification, a.id_document, b.id_portlet " +
+        " FROM document a, document_published b " + " WHERE (a.id_document = b.id_document) AND " +
+        " ( a.date_modification between ? AND ? ) AND " +
+        " ( a.date_validity_begin is null or ? > a.date_validity_begin ) AND " +
+        " ( a.date_validity_end is null or ? < a.date_validity_end ) ";
+    private static final String SQL_QUERY_SELECT_PORTLETS_BY_CRITERIAS = " SELECT a.name as title,'',a.date_update, a.id_page, a.id_portlet FROM core_portlet a WHERE a.date_update between ? AND ? ";
+    private static final String SQL_QUERY_SELECT_PAGES_BY_CRITERIAS = " SELECT a.name as title, a.description, a.date_update, a.id_page FROM core_page a WHERE a.date_update between ? AND ? ";
 
     /**
      * Returns the list of the documents which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param plugin {@link Plugin}
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    public Collection selectDocumentsByCriterias( Timestamp dateLimit )
+    public Collection<IWhatsNew> selectDocumentsByCriterias( Timestamp dateLimit, Plugin plugin, Locale locale )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS );
-
+        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS, plugin );
+        int nIndex = 1;
         Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( 1, dateLimit );
-        daoUtil.setTimestamp( 2, timestampCurrent );
-        daoUtil.setTimestamp( 3, timestampCurrent );
-        daoUtil.setTimestamp( 4, timestampCurrent );
+        daoUtil.setTimestamp( nIndex++, dateLimit );
+        daoUtil.setTimestamp( nIndex++, timestampCurrent );
+        daoUtil.setTimestamp( nIndex++, timestampCurrent );
+        daoUtil.setTimestamp( nIndex++, timestampCurrent );
         daoUtil.executeQuery(  );
 
-        ArrayList list = new ArrayList(  );
+        List<IWhatsNew> list = new ArrayList<IWhatsNew>(  );
 
         while ( daoUtil.next(  ) )
         {
-            WhatsNew whatsnew = new WhatsNew(  );
-            whatsnew.setType( WhatsNew.TYPE_DOCUMENT );
-            whatsnew.setTitle( daoUtil.getString( 1 ) );
-            whatsnew.setDescription( daoUtil.getString( 2 ) );
-            whatsnew.setDateUpdate( daoUtil.getTimestamp( 3 ) );
-            whatsnew.setDocumentId( daoUtil.getInt( 4 ) );
-            whatsnew.setPortletId( daoUtil.getInt( 5 ) );
-            list.add( whatsnew );
+            nIndex = 1;
+
+            IWhatsNew whatsNew = new WhatsNewTypeDocument(  );
+            whatsNew.setWhatsNewType( locale );
+            whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+            whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+            whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+            whatsNew.setDocumentId( daoUtil.getInt( nIndex++ ) );
+            whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+            list.add( whatsNew );
         }
 
         daoUtil.free(  );
@@ -91,29 +102,32 @@ public class WhatsNewDAO implements IWhatsNewDAO
     /**
      * Returns the list of the portlets which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    public Collection selectPortletsByCriterias( Timestamp dateLimit )
+    public Collection<IWhatsNew> selectPortletsByCriterias( Timestamp dateLimit, Locale locale )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PORTLETS_BY_CRITERIAS );
-
+        int nIndex = 1;
         Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( 1, dateLimit );
-        daoUtil.setTimestamp( 2, timestampCurrent );
+        daoUtil.setTimestamp( nIndex++, dateLimit );
+        daoUtil.setTimestamp( nIndex++, timestampCurrent );
         daoUtil.executeQuery(  );
 
-        ArrayList list = new ArrayList(  );
+        List<IWhatsNew> list = new ArrayList<IWhatsNew>(  );
 
-        while ( daoUtil.next(  ) ) //if
+        while ( daoUtil.next(  ) )
         {
-            WhatsNew whatsnew = new WhatsNew(  );
-            whatsnew.setType( WhatsNew.TYPE_PORTLET );
-            whatsnew.setTitle( daoUtil.getString( 1 ) );
-            whatsnew.setDescription( daoUtil.getString( 2 ) );
-            whatsnew.setDateUpdate( daoUtil.getTimestamp( 3 ) );
-            whatsnew.setPageId( daoUtil.getInt( 4 ) );
-            whatsnew.setPortletId( daoUtil.getInt( 5 ) );
-            list.add( whatsnew );
+            nIndex = 1;
+
+            IWhatsNew whatsNew = new WhatsNewTypePortlet(  );
+            whatsNew.setWhatsNewType( locale );
+            whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+            whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+            whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+            whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
+            whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+            list.add( whatsNew );
         }
 
         daoUtil.free(  );
@@ -124,29 +138,31 @@ public class WhatsNewDAO implements IWhatsNewDAO
     /**
      * Returns the list of the pages which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
-     *
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    public Collection selectPagesByCriterias( Timestamp dateLimit )
+    public Collection<IWhatsNew> selectPagesByCriterias( Timestamp dateLimit, Locale locale )
     {
         DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PAGES_BY_CRITERIAS );
-
+        int nIndex = 1;
         Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( 1, dateLimit );
-        daoUtil.setTimestamp( 2, timestampCurrent );
+        daoUtil.setTimestamp( nIndex++, dateLimit );
+        daoUtil.setTimestamp( nIndex++, timestampCurrent );
         daoUtil.executeQuery(  );
 
-        ArrayList list = new ArrayList(  );
+        List<IWhatsNew> list = new ArrayList<IWhatsNew>(  );
 
         while ( daoUtil.next(  ) )
         {
-            WhatsNew whatsnew = new WhatsNew(  );
-            whatsnew.setType( WhatsNew.TYPE_PAGE );
-            whatsnew.setTitle( daoUtil.getString( 1 ) );
-            whatsnew.setDescription( daoUtil.getString( 2 ) );
-            whatsnew.setDateUpdate( daoUtil.getTimestamp( 3 ) );
-            whatsnew.setPageId( daoUtil.getInt( 4 ) );
-            list.add( whatsnew );
+            nIndex = 1;
+
+            IWhatsNew whatsNew = new WhatsNewTypePage(  );
+            whatsNew.setWhatsNewType( locale );
+            whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+            whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+            whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+            whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
+            list.add( whatsNew );
         }
 
         daoUtil.free(  );

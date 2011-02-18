@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2009, Mairie de Paris
+ * Copyright (c) 2002-2010, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,35 +33,43 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business;
 
+import fr.paris.lutece.portal.service.plugin.Plugin;
+
 import java.sql.Timestamp;
 
 import java.util.Collection;
+import java.util.Locale;
 
 
 /**
- *
- * @author Isabelle
+ * 
+ * IWhatsNewDAO
+ * 
  */
 public interface IWhatsNewDAO
 {
     /**
      * Returns the list of the documents which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param plugin {@link Plugin}
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    Collection selectDocumentsByCriterias( Timestamp dateLimit );
+    Collection<IWhatsNew> selectDocumentsByCriterias( Timestamp dateLimit, Plugin plugin, Locale locale );
 
     /**
      * Returns the list of the pages which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    Collection selectPagesByCriterias( Timestamp dateLimit );
+    Collection<IWhatsNew> selectPagesByCriterias( Timestamp dateLimit, Locale locale );
 
     /**
      * Returns the list of the portlets which correspond to the criteria given
      * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param locale {@link Locale}
      * @return the list in form of a Collection object
      */
-    Collection selectPortletsByCriterias( Timestamp dateLimit );
+    Collection<IWhatsNew> selectPortletsByCriterias( Timestamp dateLimit, Locale locale );
 }

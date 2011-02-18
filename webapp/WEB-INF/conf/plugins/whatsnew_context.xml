@@ -2,7 +2,12 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
 <beans>    
-   <!-- package sqlquery -->
-	<bean id="whatsNewDAO"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewDAO" />  
-	<bean id="whatsNewPortletDAO"  class="fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortletDAO" />  	
+	<!-- package sqlquery -->
+	<bean id="whatsnew.whatsNewDAO"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewDAO" />
+	<bean id="whatsnew.whatsNewPortletDAO"  class="fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortletDAO" />
+	
+	<!-- package whatsnew -->
+	<bean id="whatsnew.whatsNewTypeDocument"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewTypeDocument" />
+	<bean id="whatsnew.whatsNewTypePortlet"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewTypePortlet" />
+	<bean id="whatsnew.whatsNewTypePage"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewTypePage" />
 </beans>

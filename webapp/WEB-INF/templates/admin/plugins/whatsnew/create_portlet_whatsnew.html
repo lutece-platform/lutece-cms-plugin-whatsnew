@@ -1,36 +1,33 @@
-<tr>
-    <th height="30" width="40%" align="left">&nbsp;&nbsp;#i18n{whatsnew.create_portlet_whatsnew.labelTypes} :&nbsp;</th>
-    <td height="30" width="60%" align="left">
-        <table>
-            <td height="30" width="25%" align="left">
-                <input class="checkbox" type="checkbox" name="checkbox_documents" value="0"/>&nbsp;#i18n{whatsnew.portlet.type.documents}
-            </td>
-            <td height="30" width="25%" align="left">
-                <input class="checkbox" type="checkbox" name="checkbox_portlets" value="2"/>&nbsp;#i18n{whatsnew.portlet.type.portlets}
-            </td>
-            <td height="30" width="25%" align="left">
-                <input class="checkbox" type="checkbox" name="checkbox_pages" value="3"/>&nbsp;#i18n{whatsnew.portlet.type.pages}
-            </td>
-        </table>
-    </td>
-</tr>
-<tr>
-    <th height="30" width="40%" align="left">&nbsp;&nbsp;#i18n{whatsnew.create_portlet_whatsnew.labelPeriod} :&nbsp;</th>
-    <td height="30" width="60%" align="left">&nbsp;
-        <@combo name="text_period" default_value="1" items=combo_period />
-    </td>
-</tr>
-<tr>
-    <th height="30" width="40%" align="left">&nbsp;&nbsp;#i18n{whatsnew.create_portlet_whatsnew.labelNbElements} :&nbsp;</th>
-    <td height="30" width="60%" align="left">&nbsp;
-        <input type="text" name="text_nbElements" value=""/>
-    </td>
-</tr>
-<tr>
-    <th height="30" width="40%" align="left">&nbsp;&nbsp;#i18n{whatsnew.create_portlet_whatsnew.labelDisplayOrder} :&nbsp;</th>
-    <td height="30" width="60%" align="left">&nbsp;
-        <input class="radio" type="radio" name="display_order" value="${value_desc}" checked="checked"/> #i18n{whatsnew.portlet.order.timesequential.descending}
-        <input class="radio" type="radio" name="display_order" value="${value_asc}" /> #i18n{whatsnew.portlet.order.timesequential.ascending}
-        <input class="radio" type="radio" name="display_order" value="${value_alpha}" /> #i18n{whatsnew.portlet.order.alphabetical}
-    </td>
-</tr>
+<p>
+	<label>#i18n{whatsnew.create_portlet_whatsnew.labelTypes} :</label>
+	<input class="checkbox" type="checkbox" name="show_portlets" value="1"/>&nbsp;#i18n{whatsnew.portlet.type.portlets}
+	<br />
+	<label>&nbsp;</label>
+	<input class="checkbox" type="checkbox" name="show_pages" value="1"/>&nbsp;#i18n{whatsnew.portlet.type.pages}
+	<#if plugin_document_activated>
+		<br />
+		<label>&nbsp;</label>
+		<input class="checkbox" type="checkbox" name="show_documents" value="1"/>&nbsp;#i18n{whatsnew.portlet.type.documents}
+	</#if>
+</p>
+<p>
+	<label>#i18n{whatsnew.create_portlet_whatsnew.labelPeriod} :</label>
+	<@combo name="text_period" default_value="1" items=combo_period />
+</p>
+<p>
+	<label>#i18n{whatsnew.create_portlet_whatsnew.labelNbElements} :</label>
+	<input type="text" name="text_nbElements" value="" size="2" maxlength="2"/>
+</p>
+<p>
+	<label>#i18n{whatsnew.create_portlet_whatsnew.labelDisplayOrder} :</label>
+	<input class="radio" type="radio" name="display_order" value="${display_order_date}" checked="checked"/>&nbsp;#i18n{whatsnew.portlet.order.timesequential}
+    <br />
+    <label>&nbsp;</label>
+    <input class="radio" type="radio" name="display_order" value="${display_order_alpha}" />&nbsp;#i18n{whatsnew.portlet.order.alphabetical}
+    <br />
+    <label>&nbsp;</label>
+    <select name="display_order_asc_desc">
+   		<option value="${display_order_desc}" selected="selected">#i18n{whatsnew.portlet.order.descending}</option>
+   		<option value="${display_order_asc}">#i18n{whatsnew.portlet.order.ascending}</option>
+   	</select>
+</p>

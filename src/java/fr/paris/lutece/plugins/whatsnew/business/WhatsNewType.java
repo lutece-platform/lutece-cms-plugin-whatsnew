@@ -31,41 +31,84 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business.portlet;
+package fr.paris.lutece.plugins.whatsnew.business;
 
-import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
-import fr.paris.lutece.portal.business.portlet.Portlet;
+import fr.paris.lutece.portal.service.i18n.I18nService;
+
+import java.util.Locale;
 
 
 /**
- * 
- * IWhatsNewPortletDAO
- * 
+ *
+ * WhatsNewType
+ *
  */
-public interface IWhatsNewPortletDAO extends IPortletInterfaceDAO
+public class WhatsNewType
 {
-    /**
-     * Delete a record from the table
-     * @param nPortletId The identifier of the portlet
-     */
-    void delete( int nPortletId );
+    private String _strLabelType;
+    private String _strClassName;
+    private Locale _locale;
 
     /**
-     * Insert a new record in the table whatsnew_portlet
-     * @param portlet the instance of the Portlet object to insert
+     * Get label type
+     * @return label type
      */
-    void insert( Portlet portlet );
+    public String getLabelType(  )
+    {
+        return _strLabelType;
+    }
 
     /**
-     * Loads the data of What's new Portlet whose identifier is specified in parameter
-     * @param nPortletId The Portlet identifier
-     * @return the whatsNew object
+     * Set label type
+     * @param strLabelType label type
      */
-    Portlet load( int nPortletId );
+    public void setLabelType( String strLabelType )
+    {
+        _strLabelType = strLabelType;
+    }
 
     /**
-     * Update the record in the table
-     * @param portlet The instance of the object portlet
+     * Get the label type
+     * @return the label name
      */
-    void store( Portlet portlet );
+    public String getName(  )
+    {
+        return I18nService.getLocalizedString( _strLabelType, _locale );
+    }
+
+    /**
+     * Get class name
+     * @return class name
+     */
+    public String getClassName(  )
+    {
+        return _strClassName;
+    }
+
+    /**
+     * Set class name
+     * @param strClassName class name
+     */
+    public void setClassName( String strClassName )
+    {
+        _strClassName = strClassName;
+    }
+
+    /**
+     * Set locale
+     * @param locale Locale
+     */
+    public void setLocale( Locale locale )
+    {
+        _locale = locale;
+    }
+
+    /**
+     * Get locale
+     * @return Locale
+     */
+    public Locale getLocale(  )
+    {
+        return _locale;
+    }
 }

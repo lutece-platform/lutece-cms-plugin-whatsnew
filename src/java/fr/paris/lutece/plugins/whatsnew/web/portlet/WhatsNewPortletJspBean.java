@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2009, Mairie de Paris
+ * Copyright (c) 2002-2010, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,19 @@
  */
 package fr.paris.lutece.plugins.whatsnew.web.portlet;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+
+import fr.paris.lutece.plugins.whatsnew.business.ElementOrderEnum;
 import fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortlet;
-import fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortletHome;
+import fr.paris.lutece.plugins.whatsnew.service.WhatsNewService;
+import fr.paris.lutece.plugins.whatsnew.service.portlet.WhatsNewPortletService;
+import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -43,70 +54,19 @@ import fr.paris.lutece.portal.web.portlet.PortletJspBean;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
-import java.util.HashMap;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
 
 /**
- * This class provides the user interface to manage Actor Portlet
+ * 
+ * WhatsNewPortletJspBean
+ * 
  */
 public class WhatsNewPortletJspBean extends PortletJspBean
 {
-    ////////////////////////////////////////////////////////////////////////////
-    // Constants
-
     // Right
     public static final String RIGHT_MANAGE_ADMIN_SITE = "CORE_ADMIN_SITE";
 
-    // Messages
-    private static final String MESSAGE_MANDATORY_PORTLET_NB_ELEMENTS_MAX = "whatsnew.message.portlet.nbelementsmax.mandatory";
-    private static final String MESSAGE_NOT_VALID_PORTLET_NB_ELEMENTS_MAX = "whatsnew.message.portlet.nbelementsmax.not.valid";
-    private static final String MESSAGE_NEGATIVE_PORTLET_NB_ELEMENTS_MAX = "whatsnew.message.portlet.nbelementsmax.negative";
-
-    // parameters
-    private static final String PARAMETER_PAGE_ID = "page_id";
-    private static final String PARAMETER_PORTLET_ID = "portlet_id";
-    private static final String PARAMETER_SHOW_DOCUMENTS = "checkbox_documents";
-    private static final String PARAMETER_SHOW_PORTLETS = "checkbox_portlets";
-    private static final String PARAMETER_SHOW_PAGES = "checkbox_pages";
-    private static final String PARAMETER_PERIOD = "text_period";
-    private static final String PARAMETER_NB_ELEMENTS_MAX = "text_nbElements";
-    private static final String PARAMETER_ELEMENTS_ORDER = "display_order";
-    private static final String PARAMETER_PORTLET_TYPE_ID = "portlet_type_id";
-
-    // Marks
-    private static final String MARK_COMBO_PERIOD = "combo_period";
-    private static final String MARK_DEFAULT_PERIOD = "default_period";
-    private static final String MARK_VALUE_DESC = "value_desc";
-    private static final String MARK_VALUE_ASC = "value_asc";
-    private static final String MARK_VALUE_ALPHA = "value_alpha";
-    private static final String MARK_CHECKED_DOCUMENTS = "checked_documents";
-    private static final String MARK_CHECKED_PORTLETS = "checked_portlets";
-    private static final String MARK_CHECKED_PAGES = "checked_pages";
-    private static final String MARK_NB_ELEMENTS_MAX = "nbElements";
-    private static final String MARK_CHECKED_ORDER_DESC = "checked_desc";
-    private static final String MARK_CHECKED_ORDER_ASC = "checked_asc";
-    private static final String MARK_CHECKED_ORDER_ALPHA = "checked_alpha";
-    private static final String MARK_TYPE_ARTICLE = "type_article";
-    private static final String MARK_TYPE_FICHE = "type_permanent_article";
-    private static final String MARK_TYPE_PORTLET = "type_portlet";
-    private static final String MARK_TYPE_PAGE = "type_page";
-
-    // properties
-    private static final String PROPERTY_FRAGMENT_DAYS_COMBO_LIST = ".days.combo.list";
-    private static final String PROPERTY_FRAGMENT_DAYS_COMBO_DEFAULT_VALUE = ".days.combo.default.value";
-
-    // constants
-    private static final String CONSTANT_CHECKED = "checked";
-    private static final String CONSTANT_EMPTY_STRING = "";
-    private static final String CONSTANT_DELIMITER_SEMI_COLON = ";";
-    private static final String CONSTANT_DELIMITER_COMA = ",";
-
     /**
      * Returns portlet "what's new" 's creation form
-     *
      * @param request request
      * @return Html form
      */
@@ -114,13 +74,13 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     {
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
+        int nPeriodByDefault = AppPropertiesService.getPropertyInt( WhatsNewConstants.PROPERTY_FRAGMENT_DAYS_COMBO_DEFAULT_VALUE,
+                7 );
 
-        HashMap model = new HashMap(  );
-        String strPeriodByDefault = AppPropertiesService.getProperty( getPropertiesPrefix(  ) +
-                PROPERTY_FRAGMENT_DAYS_COMBO_DEFAULT_VALUE );
-        model.put( MARK_COMBO_PERIOD, getComboDays(  ) );
-        model.put( MARK_DEFAULT_PERIOD, String.valueOf( Integer.parseInt( strPeriodByDefault ) ) );
-        model = initializePortlet( model );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        model.put( WhatsNewConstants.MARK_COMBO_PERIOD, getComboDays(  ) );
+        model.put( WhatsNewConstants.MARK_DEFAULT_PERIOD, nPeriodByDefault );
+        initializeModel( model );
 
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
 
@@ -129,222 +89,146 @@ public class WhatsNewPortletJspBean extends PortletJspBean
 
     /**
      * Returns portlet "what's new" 's modification form
-     *
      * @param request request
      * @return Html form
      */
     public String getModify( HttpServletRequest request )
     {
+        String strUrl = StringUtils.EMPTY;
         String strPortletId = request.getParameter( PARAMETER_PORTLET_ID );
-        int nPortletId = Integer.parseInt( strPortletId );
-        WhatsNewPortlet portlet = (WhatsNewPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        HashMap model = new HashMap(  );
-        model.put( MARK_COMBO_PERIOD, getComboDays(  ) );
-        model.put( MARK_DEFAULT_PERIOD, String.valueOf( portlet.getPeriod(  ) ) );
-        model = initializePortlet( model );
-
-        if ( portlet.getShowDocuments(  ) )
+        if ( StringUtils.isNotBlank( strPortletId ) && StringUtils.isNumeric( strPortletId ) )
         {
-            model.put( MARK_CHECKED_DOCUMENTS, CONSTANT_CHECKED );
+            int nPortletId = Integer.parseInt( strPortletId );
+            WhatsNewPortlet portlet = WhatsNewPortletService.getInstance(  ).getPortlet( nPortletId );
+
+            if ( portlet != null )
+            {
+                Map<String, Object> model = new HashMap<String, Object>(  );
+                model.put( WhatsNewConstants.MARK_COMBO_PERIOD, getComboDays(  ) );
+                model.put( WhatsNewConstants.MARK_WHATSNEW_PORTLET, portlet );
+                initializeModel( model );
+
+                HtmlTemplate template = getModifyTemplate( portlet, model );
+
+                strUrl = template.getHtml(  );
+            }
+            else
+            {
+                strUrl = AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_OBJECT_NOT_FOUND,
+                        AdminMessage.TYPE_ERROR );
+            }
         }
         else
         {
-            model.put( MARK_CHECKED_DOCUMENTS, CONSTANT_EMPTY_STRING );
+            strUrl = AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_NOT_NUMERIC,
+                    AdminMessage.TYPE_ERROR );
         }
 
-        if ( portlet.getShowPortlets(  ) )
-        {
-            model.put( MARK_CHECKED_PORTLETS, CONSTANT_CHECKED );
-        }
-        else
-        {
-            model.put( MARK_CHECKED_PORTLETS, CONSTANT_EMPTY_STRING );
-        }
-
-        if ( portlet.getShowPages(  ) )
-        {
-            model.put( MARK_CHECKED_PAGES, CONSTANT_CHECKED );
-        }
-        else
-        {
-            model.put( MARK_CHECKED_PAGES, CONSTANT_EMPTY_STRING );
-        }
-
-        model.put( MARK_NB_ELEMENTS_MAX, String.valueOf( portlet.getNbElementsMax(  ) ) );
-
-        if ( portlet.getElementsOrder(  ) == WhatsNewPortlet.ELEMENT_ORDER_DATE_DESC )
-        {
-            model.put( MARK_CHECKED_ORDER_DESC, CONSTANT_CHECKED );
-            model.put( MARK_CHECKED_ORDER_ASC, CONSTANT_EMPTY_STRING );
-            model.put( MARK_CHECKED_ORDER_ALPHA, CONSTANT_EMPTY_STRING );
-        }
-        else if ( portlet.getElementsOrder(  ) == WhatsNewPortlet.ELEMENT_ORDER_DATE_ASC )
-        {
-            model.put( MARK_CHECKED_ORDER_DESC, CONSTANT_EMPTY_STRING );
-            model.put( MARK_CHECKED_ORDER_ASC, CONSTANT_CHECKED );
-            model.put( MARK_CHECKED_ORDER_ALPHA, CONSTANT_EMPTY_STRING );
-        }
-        else if ( portlet.getElementsOrder(  ) == WhatsNewPortlet.ELEMENT_ORDER_ALPHA )
-        {
-            model.put( MARK_CHECKED_ORDER_DESC, CONSTANT_EMPTY_STRING );
-            model.put( MARK_CHECKED_ORDER_ASC, CONSTANT_EMPTY_STRING );
-            model.put( MARK_CHECKED_ORDER_ALPHA, CONSTANT_CHECKED );
-        }
-        else
-        {
-            model.put( MARK_CHECKED_ORDER_DESC, CONSTANT_CHECKED );
-            model.put( MARK_CHECKED_ORDER_ASC, CONSTANT_EMPTY_STRING );
-            model.put( MARK_CHECKED_ORDER_ALPHA, CONSTANT_EMPTY_STRING );
-        }
-
-        HtmlTemplate template = getModifyTemplate( portlet, model );
-
-        return template.getHtml(  );
+        return strUrl;
     }
 
     /**
      * Process whatsNewPortlet's creation
-     *
      * @param request request
      * @return Portlet's modification url
      */
     public String doCreate( HttpServletRequest request )
     {
-        WhatsNewPortlet portlet = new WhatsNewPortlet(  );
-
+        String strUrl = StringUtils.EMPTY;
         String strIdPage = request.getParameter( PARAMETER_PAGE_ID );
-        int nIdPage = Integer.parseInt( strIdPage );
 
-        String strNbElementsMax = request.getParameter( PARAMETER_NB_ELEMENTS_MAX );
-
-        if ( ( strNbElementsMax == null ) || strNbElementsMax.trim(  ).equals( "" ) )
+        if ( StringUtils.isNotBlank( strIdPage ) && StringUtils.isNumeric( strIdPage ) )
         {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_PORTLET_NB_ELEMENTS_MAX,
-                AdminMessage.TYPE_ERROR );
-        }
+            WhatsNewPortlet portlet = new WhatsNewPortlet(  );
+            String strError = getPortletData( portlet, request );
 
-        // check NbelementMax is of a valid format
-        try
-        {
-            int nNbElementsMax = Integer.parseInt( strNbElementsMax );
-
-            if ( nNbElementsMax <= 0 )
+            if ( StringUtils.isBlank( strError ) )
             {
-                return AdminMessageService.getMessageUrl( request, MESSAGE_NEGATIVE_PORTLET_NB_ELEMENTS_MAX,
-                    AdminMessage.TYPE_ERROR );
+                int nIdPage = Integer.parseInt( strIdPage );
+                portlet.setPageId( nIdPage );
+
+                // Creating portlet
+                WhatsNewPortletService.getInstance(  ).create( portlet );
+
+                //Displays the page with the new Portlet
+                strUrl = getPageUrl( portlet.getPageId(  ) );
+            }
+            else
+            {
+                strUrl = strError;
             }
         }
-        catch ( NumberFormatException nb )
+        else
         {
-            //the format of the identifier of the page is not valid
-            return AdminMessageService.getMessageUrl( request, MESSAGE_NOT_VALID_PORTLET_NB_ELEMENTS_MAX,
-                AdminMessage.TYPE_ERROR );
+            strUrl = AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_NOT_NUMERIC,
+                    AdminMessage.TYPE_ERROR );
         }
 
-        portlet = validatePortlet( portlet, request );
-
-        // get portlet common attributes
-        String strErrorUrl = setPortletCommonData( request, portlet );
-
-        if ( strErrorUrl != null )
-        {
-            return strErrorUrl;
-        }
-
-        portlet.setPageId( nIdPage );
-
-        // Creating portlet
-        WhatsNewPortletHome.getInstance(  ).create( portlet );
-
-        //Displays the page with the new Portlet
-        return getPageUrl( portlet.getPageId(  ) );
+        return strUrl;
     }
 
     /**
      * Process portlet's modification
-     *
      * @param request request
      * @return The Jsp management URL of the process result
      */
     public String doModify( HttpServletRequest request )
     {
-        // Getting portlet
+        String strUrl = StringUtils.EMPTY;
         String strPortletId = request.getParameter( PARAMETER_PORTLET_ID );
-        int nPortletId = Integer.parseInt( strPortletId );
-        WhatsNewPortlet portlet = (WhatsNewPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        String strNbElementsMax = request.getParameter( PARAMETER_NB_ELEMENTS_MAX );
-
-        if ( ( strNbElementsMax == null ) || strNbElementsMax.trim(  ).equals( "" ) )
+        if ( StringUtils.isNotBlank( strPortletId ) && StringUtils.isNumeric( strPortletId ) )
         {
-            return AdminMessageService.getMessageUrl( request, MESSAGE_MANDATORY_PORTLET_NB_ELEMENTS_MAX,
-                AdminMessage.TYPE_ERROR );
-        }
+            int nPortletId = Integer.parseInt( strPortletId );
+            WhatsNewPortlet portlet = (WhatsNewPortlet) PortletHome.findByPrimaryKey( nPortletId );
 
-        // check NbelementMax is of a valid format
-        try
-        {
-            int nNbElementsMax = Integer.parseInt( strNbElementsMax );
-
-            if ( nNbElementsMax <= 0 )
+            if ( portlet != null )
             {
-                return AdminMessageService.getMessageUrl( request, MESSAGE_NEGATIVE_PORTLET_NB_ELEMENTS_MAX,
-                    AdminMessage.TYPE_ERROR );
+                String strError = getPortletData( portlet, request );
+
+                if ( StringUtils.isBlank( strError ) )
+                {
+                    WhatsNewPortletService.getInstance(  ).update( portlet );
+                    strUrl = getPageUrl( portlet.getPageId(  ) );
+                }
+                else
+                {
+                    strUrl = strError;
+                }
+            }
+            else
+            {
+                strUrl = AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_OBJECT_NOT_FOUND,
+                        AdminMessage.TYPE_ERROR );
             }
         }
-        catch ( NumberFormatException nb )
+        else
         {
-            //the format of the identifier of the page is not valid
-            return AdminMessageService.getMessageUrl( request, MESSAGE_NOT_VALID_PORTLET_NB_ELEMENTS_MAX,
-                AdminMessage.TYPE_ERROR );
+            strUrl = AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_NOT_NUMERIC,
+                    AdminMessage.TYPE_ERROR );
         }
 
-        portlet = validatePortlet( portlet, request );
-
-        // get portlet common attributes
-        String strErrorUrl = setPortletCommonData( request, portlet );
-
-        if ( strErrorUrl != null )
-        {
-            return strErrorUrl;
-        }
-
-        // Modificating portlet
-        portlet.update(  );
-
-        // Returns page with new created portlet
-        return getPageUrl( portlet.getPageId(  ) );
-    }
-
-    /**
-     * Returns portlet's properties prefix
-     *
-     * @return prefix
-     */
-    public String getPropertiesPrefix(  )
-    {
-        return "portlet.whatsnew";
+        return strUrl;
     }
 
     /**
      * Initialize the number of days' combo
-     *
      * @return the html code of the combo
      */
     private ReferenceList getComboDays(  )
     {
         // Returns the list stored in the property file and the default value
-        String strPropertyNameList = getPropertiesPrefix(  ) + PROPERTY_FRAGMENT_DAYS_COMBO_LIST;
-        String strListe = AppPropertiesService.getProperty( strPropertyNameList );
+        String strListe = AppPropertiesService.getProperty( WhatsNewConstants.PROPERTY_FRAGMENT_DAYS_COMBO_LIST );
 
         ReferenceList comboDaysList = new ReferenceList(  );
 
-        StringTokenizer strTokSemiColon = new StringTokenizer( strListe, CONSTANT_DELIMITER_SEMI_COLON );
+        StringTokenizer strTokSemiColon = new StringTokenizer( strListe, WhatsNewConstants.DELIMITER_SEMI_COLON );
 
         while ( strTokSemiColon.hasMoreTokens(  ) )
         {
-            StringTokenizer strTokComa = new StringTokenizer( strTokSemiColon.nextToken(  ), CONSTANT_DELIMITER_COMA );
+            StringTokenizer strTokComa = new StringTokenizer( strTokSemiColon.nextToken(  ),
+                    WhatsNewConstants.DELIMITER_COMA );
 
             while ( strTokComa.hasMoreTokens(  ) )
             {
@@ -355,59 +239,95 @@ public class WhatsNewPortletJspBean extends PortletJspBean
         return comboDaysList;
     }
 
-    private HashMap initializePortlet( HashMap model )
+    /**
+     * Initialize the model
+     * @param model the model
+     */
+    private void initializeModel( Map<String, Object> model )
     {
-        model.put( MARK_VALUE_DESC, String.valueOf( WhatsNewPortlet.ELEMENT_ORDER_DATE_DESC ) );
-        model.put( MARK_VALUE_ASC, String.valueOf( WhatsNewPortlet.ELEMENT_ORDER_DATE_ASC ) );
-        model.put( MARK_VALUE_ALPHA, String.valueOf( WhatsNewPortlet.ELEMENT_ORDER_ALPHA ) );
-
-        return model;
+    	model.put( WhatsNewConstants.MARK_PLUGIN_DOCUMENT_ACTIVATED, WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DATE, ElementOrderEnum.DATE.getId(  ) );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ALPHA, ElementOrderEnum.ALPHA.getId(  ) );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ASC, WhatsNewConstants.DISPLAY_ASC );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DESC, WhatsNewConstants.DISPLAY_DESC );
     }
 
     /**
-     * process the validation of the portlet
-     *
+     * Process the validation of the portlet
      * @param portlet the portlet to modify and validate
      * @param request the request containing the informations to store in the portlet
      * @return WhatsNewPortlet the new portlet
      */
-    private WhatsNewPortlet validatePortlet( WhatsNewPortlet portlet, HttpServletRequest request )
+    private String getPortletData( WhatsNewPortlet portlet, HttpServletRequest request )
     {
         // Getting portlet's common attibuts
-        setPortletCommonData( request, portlet );
+        String strError = setPortletCommonData( request, portlet );
 
-        // Getting portlet's specific attibuts
-        if ( request.getParameter( PARAMETER_SHOW_DOCUMENTS ) == null )
+        String strNbElementsMax = request.getParameter( WhatsNewConstants.PARAMETER_NB_ELEMENTS_MAX );
+
+        if ( StringUtils.isNotBlank( strNbElementsMax ) )
         {
-            portlet.setShowDocuments( false );
+            if ( StringUtils.isNumeric( strNbElementsMax ) )
+            {
+                int nNbElementsMax = Integer.parseInt( strNbElementsMax );
+
+                if ( nNbElementsMax > 0 )
+                {
+                    String strIsAscSort = request.getParameter( WhatsNewConstants.PARAMETER_DISPLAY_ORDER_ASC_DESC );
+                    boolean bIsAscSort = false;
+
+                    if ( StringUtils.isNotBlank( strIsAscSort ) && StringUtils.isNumeric( strIsAscSort ) && 
+                    		Integer.parseInt( strIsAscSort ) == WhatsNewConstants.DISPLAY_ASC )
+                    {
+                    	bIsAscSort = true;
+                    }
+
+                    String strPeriod = request.getParameter( WhatsNewConstants.PARAMETER_PERIOD );
+                    String strElementOrder = request.getParameter( WhatsNewConstants.PARAMETER_DISPLAY_ORDER );
+
+                    if ( StringUtils.isNotBlank( strPeriod ) && StringUtils.isNumeric( strPeriod ) &&
+                            StringUtils.isNotBlank( strElementOrder ) && StringUtils.isNumeric( strElementOrder ) )
+                    {
+                        int nPeriod = Integer.parseInt( strPeriod );
+                        int nElementOrder = Integer.parseInt( strElementOrder );
+
+                        String strShowDocuments = request.getParameter( WhatsNewConstants.PARAMETER_SHOW_DOCUMENTS );
+                        String strShowPortlets = request.getParameter( WhatsNewConstants.PARAMETER_SHOW_PORTLETS );
+                        String strShowPages = request.getParameter( WhatsNewConstants.PARAMETER_SHOW_PAGES );
+
+                        portlet.setShowDocuments( strShowDocuments != null );
+                        portlet.setShowPortlets( strShowPortlets != null );
+                        portlet.setShowPages( strShowPages != null );
+                        portlet.setAscSort( bIsAscSort );
+
+                        portlet.setPeriod( nPeriod );
+                        portlet.setNbElementsMax( nNbElementsMax );
+                        portlet.setElementsOrder( nElementOrder );
+                    }
+                    else
+                    {
+                        strError = AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_NOT_NUMERIC,
+                                AdminMessage.TYPE_ERROR );
+                    }
+                }
+                else
+                {
+                    strError = AdminMessageService.getMessageUrl( request,
+                            WhatsNewConstants.MESSAGE_NEGATIVE_PORTLET_NB_ELEMENTS_MAX, AdminMessage.TYPE_ERROR );
+                }
+            }
+            else
+            {
+                strError = AdminMessageService.getMessageUrl( request,
+                        WhatsNewConstants.MESSAGE_NOT_VALID_PORTLET_NB_ELEMENTS_MAX, AdminMessage.TYPE_ERROR );
+            }
         }
         else
         {
-            portlet.setShowDocuments( true );
+            strError = AdminMessageService.getMessageUrl( request,
+                    WhatsNewConstants.MESSAGE_MANDATORY_PORTLET_NB_ELEMENTS_MAX, AdminMessage.TYPE_ERROR );
         }
 
-        if ( request.getParameter( PARAMETER_SHOW_PORTLETS ) == null )
-        {
-            portlet.setShowPortlets( false );
-        }
-        else
-        {
-            portlet.setShowPortlets( true );
-        }
-
-        if ( request.getParameter( PARAMETER_SHOW_PAGES ) == null )
-        {
-            portlet.setShowPages( false );
-        }
-        else
-        {
-            portlet.setShowPages( true );
-        }
-
-        portlet.setPeriod( Integer.parseInt( request.getParameter( PARAMETER_PERIOD ) ) );
-        portlet.setNbElementsMax( Integer.parseInt( request.getParameter( PARAMETER_NB_ELEMENTS_MAX ) ) );
-        portlet.setElementsOrder( Integer.parseInt( request.getParameter( PARAMETER_ELEMENTS_ORDER ) ) );
-
-        return portlet;
+        return strError;
     }
 }

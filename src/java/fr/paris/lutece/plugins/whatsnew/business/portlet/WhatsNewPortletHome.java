@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2009, Mairie de Paris
+ * Copyright (c) 2002-2010, Mairie de Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,16 +40,18 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 
 
 /**
- * This class provides instances management methods for WhatsNewPortlet objects
+ * 
+ * WhatsNewPortletHome
+ * 
  */
 public class WhatsNewPortletHome extends PortletHome
 {
     // Static variable pointed at the DAO instance
     private static IWhatsNewPortletDAO _dao = (IWhatsNewPortletDAO) SpringContextService.getPluginBean( "whatsnew",
-            "whatsNewPortletDAO" );
+            "whatsnew.whatsNewPortletDAO" );
 
     /** This class implements the Singleton design pattern. */
-    private static WhatsNewPortletHome _singleton = null;
+    private static WhatsNewPortletHome _singleton;
 
     /**
      * Constructor
