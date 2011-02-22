@@ -33,59 +33,61 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business;
 
-import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
-import fr.paris.lutece.portal.web.constants.Parameters;
-
-import java.util.Locale;
-
 
 /**
  *
- * WhatsNewTypePage
+ * PortletDocumentLink
  *
  */
-public class WhatsNewTypePage extends WhatsNew
+public class PortletDocumentLink
 {
-    private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/page/moderated_page.html";
+    private int _nPortletId;
+    private int _nDocumentId;
 
     /**
      * Constructor
+     * @param nPortletId the portlet ID
+     * @param nDocumentId the document ID
      */
-    public WhatsNewTypePage(  )
+    public PortletDocumentLink( int nPortletId, int nDocumentId )
     {
+        _nPortletId = nPortletId;
+        _nDocumentId = nDocumentId;
     }
 
     /**
-     * {@inheritDoc}
+     * Set the portlet ID
+     * @param nPortletId the portlet ID
      */
-    public String getTemplateModeratedElement(  )
+    public void setPortletId( int nPortletId )
     {
-        return TEMPLATE_MODERATED_ELEMENTS_LIST;
+        _nPortletId = nPortletId;
     }
 
     /**
-     * {@inheritDoc}
+     * Get the portlet ID
+     * @return the portlet ID
      */
-    public void setWhatsNewType( Locale locale )
+    public int getPortletId(  )
     {
-        WhatsNewType whatsNewType = new WhatsNewType(  );
-        whatsNewType.setLocale( locale );
-        whatsNewType.setClassName( this.getClass(  ).getName(  ) );
-        whatsNewType.setLabelType( WhatsNewConstants.PROPERTY_TYPE_PAGE );
-        setWhatsNewType( whatsNewType );
+        return _nPortletId;
     }
 
     /**
-     * {@inheritDoc}
+     * Set the document ID
+     * @param nDocumentId the document ID
      */
-    public String buildUrl(  )
+    public void setDocumentId( int nDocumentId )
     {
-        StringBuilder sbUrl = new StringBuilder(  );
-        sbUrl.append( WhatsNewConstants.INTERROGATION_MARK );
-        sbUrl.append( Parameters.PAGE_ID );
-        sbUrl.append( WhatsNewConstants.EQUAL );
-        sbUrl.append( getPageId(  ) );
+        _nDocumentId = nDocumentId;
+    }
 
-        return sbUrl.toString(  );
+    /**
+     * Get the document ID
+     * @return the document ID
+     */
+    public int getDocumentId(  )
+    {
+        return _nDocumentId;
     }
 }

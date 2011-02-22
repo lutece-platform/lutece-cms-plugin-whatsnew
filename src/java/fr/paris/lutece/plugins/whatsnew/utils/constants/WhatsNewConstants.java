@@ -49,6 +49,7 @@ public final class WhatsNewConstants
     public static final String DELIMITER_COMA = ",";
     public static final String UNDERSCORE = "_";
     public static final String DOCUMENT_PLUGIN_NAME = "document";
+    public static final String ZERO = "0";
     public static final int DISPLAY_ASC = 1;
     public static final int DISPLAY_DESC = 0;
 
@@ -56,29 +57,40 @@ public final class WhatsNewConstants
     public static final String MARK_COMBO_PERIOD = "combo_period";
     public static final String MARK_DEFAULT_PERIOD = "default_period";
     public static final String MARK_WHATSNEW_PORTLET = "whatsnew_portlet";
+    public static final String MARK_WHATSNEW_PORTLET_ID = "whatsnew_portlet_id";
     public static final String MARK_DISPLAY_ORDER_DATE = "display_order_date";
     public static final String MARK_DISPLAY_ORDER_ALPHA = "display_order_alpha";
     public static final String MARK_DISPLAY_ORDER_ASC = "display_order_asc";
     public static final String MARK_DISPLAY_ORDER_DESC = "display_order_desc";
     public static final String MARK_PLUGIN_DOCUMENT_ACTIVATED = "plugin_document_activated";
+    public static final String MARK_MODERATED_ELEMENTS_LIST = "moderated_elements_list";
+    public static final String MARK_ELEMENT = "element";
+    public static final String MARK_ELEMENTS_LIST = "elements_list";
+    public static final String MARK_WHATSNEW_TYPE = "whatsnew_type";
+    public static final String MARK_LIST_PARAM_DEFAULT_VALUES = "list_param_default_values";
 
     // PARAMETERS
     public static final String PARAMETER_DOCUMENT_ID = "document_id";
     public static final String PARAMETER_MIN_DISPLAY = "min_display";
-    public static final String PARAMETER_SHOW_DOCUMENTS = "show_documents";
-    public static final String PARAMETER_SHOW_PORTLETS = "show_portlets";
     public static final String PARAMETER_SHOW_PAGES = "show_pages";
+    public static final String PARAMETER_SHOW_PORTLETS = "show_portlets";
+    public static final String PARAMETER_SHOW_DOCUMENTS = "show_documents";
     public static final String PARAMETER_PERIOD = "text_period";
     public static final String PARAMETER_NB_ELEMENTS_MAX = "text_nbElements";
     public static final String PARAMETER_DISPLAY_ORDER = "display_order";
     public static final String PARAMETER_DISPLAY_ORDER_ASC_DESC = "display_order_asc_desc";
+    public static final String PARAMETER_IS_DYNAMIC = "is_dynamic";
+    public static final String PARAMETER_MODERATED_PAGE = "moderated_page";
+    public static final String PARAMETER_MODERATED_PORTLET = "moderated_portlet";
+    public static final String PARAMETER_MODERATED_DOCUMENT = "moderated_document";
+    public static final String PARAMETER_WHATSNEW_PORTLET_ID = "whatsnew_portlet_id";
 
     // PROPERTIES
     public static final String PROPERTY_FRAGMENT_DAYS_COMBO_LIST = "portlet.whatsnew.days.combo.list";
-    public static final String PROPERTY_FRAGMENT_DAYS_COMBO_DEFAULT_VALUE = "portlet.whatsnew.days.combo.default.value";
     public static final String PROPERTY_TYPE_DOCUMENT = "whatsnew.type.document";
     public static final String PROPERTY_TYPE_PORTLET = "whatsnew.type.portlet";
     public static final String PROPERTY_TYPE_PAGE = "whatsnew.type.page";
+    public static final String PROPERTY_DAEMON_MODERATED_ELEMENTS_CLEANER_LANGUAGE = "daemon.whatsNewModeratedElementsCleaner.language";
 
     // MESSAGES
     public static final String MESSAGE_MANDATORY_PORTLET_NB_ELEMENTS_MAX = "whatsnew.message.portlet.nbelementsmax.mandatory";
@@ -97,6 +109,11 @@ public final class WhatsNewConstants
     public static final String TAG_WHATS_NEW_PORTLET = "whatsnew-list-portlet";
     public static final String TAG_WHATS_NEW_MIN_DISPLAY = "whatsnew-min-display";
     public static final String TAG_WHATS_NEW_NUMBER_DISPLAY = "whatsnew-number-display";
+
+    // SPRING
+    public static final String BEAN_WHATSNEW_TYPE_PAGE = "whatsnew.whatsNewTypePage";
+    public static final String BEAN_WHATSNEW_TYPE_PORTLET = "whatsnew.whatsNewTypePortlet";
+    public static final String BEAN_WHATSNEW_TYPE_DOCUMENT = "whatsnew.whatsNewTypeDocument";
 
     /**
      * public constructor

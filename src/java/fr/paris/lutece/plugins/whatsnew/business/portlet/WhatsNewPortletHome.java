@@ -33,16 +33,20 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business.portlet;
 
+import fr.paris.lutece.plugins.whatsnew.business.PortletDocumentLink;
 import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.business.portlet.PortletTypeHome;
+import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+
+import java.util.List;
 
 
 /**
- * 
+ *
  * WhatsNewPortletHome
- * 
+ *
  */
 public class WhatsNewPortletHome extends PortletHome
 {
@@ -58,18 +62,13 @@ public class WhatsNewPortletHome extends PortletHome
     */
     public WhatsNewPortletHome(  )
     {
-        if ( _singleton == null )
-        {
-            _singleton = this;
-        }
     }
 
     /**
      * Returns the instance of the WhatsNewPortletHome singleton
-     *
      * @return the WhatsNewPortletHome instance
      */
-    public static PortletHome getInstance(  )
+    public static WhatsNewPortletHome getInstance(  )
     {
         if ( _singleton == null )
         {
@@ -81,7 +80,6 @@ public class WhatsNewPortletHome extends PortletHome
 
     /**
      * Returns the type of the portlet
-     *
      * @return The type of the portlet
      */
     public String getPortletTypeId(  )
@@ -94,11 +92,148 @@ public class WhatsNewPortletHome extends PortletHome
 
     /**
      * Returns the instance of the WhatsNewPortletDAO singleton
-     *
      * @return the instance of the WhatsNewPortletDAO
      */
     public IPortletInterfaceDAO getDAO(  )
     {
         return _dao;
+    }
+
+    /**
+     * Select all WhatsNewPortlet
+     * @return a list of {@link WhatsNewPortlet}
+     */
+    public List<WhatsNewPortlet> selectAll(  )
+    {
+        return _dao.findAll(  );
+    }
+
+    /**
+     * Load all page IDs associated to the given whatNewPortletId
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     * @return a list of page IDs
+     */
+    public List<Integer> getPageIdsFromWhatsNewId( int nWhatsNewPortletId, Plugin plugin )
+    {
+        return _dao.loadPageIdsFromWhatsNewPortletId( nWhatsNewPortletId, plugin );
+    }
+
+    /**
+     * Load all portlet IDs associated to the given whatsNewPortletId
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     * @return a list of portlet IDs
+     */
+    public List<Integer> getPortletIdsFromWhatsNewId( int nWhatsNewPortletId, Plugin plugin )
+    {
+        return _dao.loadPortletIdsFromWhatsNewPortletId( nWhatsNewPortletId, plugin );
+    }
+
+    /**
+     * Load all the documents associated to the given whatsnewPortletId
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     * @return a list of {@link PortletDocumentLink}
+     */
+    public List<PortletDocumentLink> getDocumentsFromWhatsNewId( int nWhatsNewPortletId, Plugin plugin )
+    {
+        return _dao.loadDocumentFromWhatsNewPortletId( nWhatsNewPortletId, plugin );
+    }
+
+    /**
+     * Insert a link between a whatsnew portlet and a page
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param nPageId the page ID
+     * @param plugin {@link Plugin}
+     */
+    public void createModeratedPage( int nWhatsNewPortletId, int nPageId, Plugin plugin )
+    {
+        _dao.insertPageForWhatsNew( nWhatsNewPortletId, nPageId, plugin );
+    }
+
+    /**
+     * Insert a link between a whatsnew portlet and a portlet
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param nPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    public void createModeratedPortlet( int nWhatsNewPortletId, int nPortletId, Plugin plugin )
+    {
+        _dao.insertPortletForWhatsNew( nWhatsNewPortletId, nPortletId, plugin );
+    }
+
+    /**
+     * Insert a link between a document and a whatsnew portlet
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param pdLink {@link PortletDocumentLink}
+     * @param plugin {@link Plugin}
+     */
+    public void createModeratedDocument( int nWhatsNewPortletId, PortletDocumentLink pdLink, Plugin plugin )
+    {
+        _dao.insertDocumentForWhatsNew( nWhatsNewPortletId, pdLink, plugin );
+    }
+
+    /**
+     * Delete all links of a whatsnew portlet to the pages
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    public void removeModeratedPages( int nWhatsNewPortletId, Plugin plugin )
+    {
+        _dao.deletePagesFromWhatsNew( nWhatsNewPortletId, plugin );
+    }
+
+    /**
+     * Delete all links of a whatsnew portlet to the portlets
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param plugin {@link Plugin}
+     */
+    public void removeModeratedPortlets( int nWhatsNewPortletId, Plugin plugin )
+    {
+        _dao.deletePortletsFromWhatsNew( nWhatsNewPortletId, plugin );
+    }
+
+    /**
+     * Delete all links of a whatsnew portlet to the documents
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    public void removeModeratedDocuments( int nWhatsNewPortletId, Plugin plugin )
+    {
+        _dao.deleteDocumentsFromWhatsNew( nWhatsNewPortletId, plugin );
+    }
+
+    /**
+     * Delete a link between a whatsnew portlet and a page
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param nPageId the page ID
+     * @param plugin {@link Plugin}
+     */
+    public void removeModeratedPage( int nWhatsNewPortletId, int nPageId, Plugin plugin )
+    {
+        _dao.deleteLinkWhatsNewPortletToPage( nWhatsNewPortletId, nPageId, plugin );
+    }
+
+    /**
+     * Delete a link between a whatsnew portlet and a portlet
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param nPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    public void removeModeratedPortlet( int nWhatsNewPortletId, int nPortletId, Plugin plugin )
+    {
+        _dao.deleteLinkWhatsNewPortletToPortlet( nWhatsNewPortletId, nPortletId, plugin );
+    }
+
+    /**
+     * Delete a link between a whatsnew portlet and a document
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param pdLink {@link PortletDocumentLink}
+     * @param plugin {@link Plugin}
+     */
+    public void removeModeratedDocument( int nWhatsNewPortletId, PortletDocumentLink pdLink, Plugin plugin )
+    {
+        _dao.deleteLinkWhatsNewPortletToDocument( nWhatsNewPortletId, pdLink, plugin );
     }
 }

@@ -55,9 +55,9 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * 
+ *
  * WhatsNewPortlet
- * 
+ *
  */
 public class WhatsNewPortlet extends Portlet
 {
@@ -68,6 +68,7 @@ public class WhatsNewPortlet extends Portlet
     private int _nPeriod;
     private int _nNbElementsMax;
     private int _nElementsOrder;
+    private boolean _bIsDynamic;
 
     /**
      * Sets the identifier of the portlet type to the value specified in the WhatsNewPortletHome class
@@ -214,6 +215,24 @@ public class WhatsNewPortlet extends Portlet
     }
 
     /**
+     * Check if the whatsnew is dynamic
+     * @return true if it is dynamic, false otherwise
+     */
+    public boolean getDynamic(  )
+    {
+        return _bIsDynamic;
+    }
+
+    /**
+     * Set the attribute dynamic of the whatsnew
+     * @param bIsDynamic true if it is dynamic, false otherwise
+     */
+    public void setDynamic( boolean bIsDynamic )
+    {
+        _bIsDynamic = bIsDynamic;
+    }
+
+    /**
      * Returns the XML content of the portlet without the XML header
      * @param request The HTTP Servlet request
      * @return The Xml content of this portlet
@@ -224,32 +243,56 @@ public class WhatsNewPortlet extends Portlet
         XmlUtil.beginElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_PORTLET );
 
         List<IWhatsNew> listElements = new ArrayList<IWhatsNew>(  );
-
-        Timestamp limitTimestamp = WhatsNewPortletService.getInstance(  )
-                                                         .getTimestampFromPeriodAndCurrentDate( _nPeriod,
-                request.getLocale(  ) );
-
         Locale locale = request.getLocale(  );
+        Timestamp limitTimestamp = WhatsNewService.getInstance(  ).getTimestampFromPeriodAndCurrentDate( _nPeriod,
+                locale );
 
-        if ( _bShowDocuments && WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) )
+        if ( _bShowPages )
         {
-            Collection<IWhatsNew> listDocuments = WhatsNewService.getInstance(  )
-                                                                 .getDocumentsByCriterias( limitTimestamp, locale );
-            listElements.addAll( listDocuments );
+            Collection<IWhatsNew> listPages;
+
+            if ( !_bIsDynamic )
+            {
+                listPages = WhatsNewService.getInstance(  ).getModeratedPages( getId(  ), locale );
+            }
+            else
+            {
+                listPages = WhatsNewService.getInstance(  ).getPagesByCriterias( limitTimestamp, locale );
+            }
+
+            listElements.addAll( listPages );
         }
 
         if ( _bShowPortlets )
         {
-            Collection<IWhatsNew> listPortlets = WhatsNewService.getInstance(  )
-                                                                .getPortletsByCriterias( limitTimestamp, locale );
+            Collection<IWhatsNew> listPortlets;
+
+            if ( !_bIsDynamic )
+            {
+                listPortlets = WhatsNewService.getInstance(  ).getModeratedPortlets( getId(  ), locale );
+            }
+            else
+            {
+                listPortlets = WhatsNewService.getInstance(  ).getPortletsByCriterias( limitTimestamp, locale );
+            }
+
             listElements.addAll( listPortlets );
         }
 
-        if ( _bShowPages )
+        if ( _bShowDocuments && WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) )
         {
-            Collection<IWhatsNew> listPages = WhatsNewService.getInstance(  ).getPagesByCriterias( limitTimestamp,
-                    locale );
-            listElements.addAll( listPages );
+            Collection<IWhatsNew> listDocuments;
+
+            if ( !_bIsDynamic )
+            {
+                listDocuments = WhatsNewService.getInstance(  ).getModeratedDocuments( getId(  ), locale );
+            }
+            else
+            {
+                listDocuments = WhatsNewService.getInstance(  ).getDocumentsByCriterias( limitTimestamp, locale );
+            }
+
+            listElements.addAll( listDocuments );
         }
 
         Collections.sort( listElements, new WhatsNewComparator( _nElementsOrder, _bIsAscSort ) );

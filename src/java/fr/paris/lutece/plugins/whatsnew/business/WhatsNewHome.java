@@ -41,13 +41,14 @@ import fr.paris.lutece.portal.service.spring.SpringContextService;
 import java.sql.Timestamp;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 
 /**
- * 
+ *
  * WhatsNewHome
- * 
+ *
  */
 public final class WhatsNewHome
 {
@@ -58,6 +59,28 @@ public final class WhatsNewHome
     /** Constructor */
     private WhatsNewHome(  )
     {
+    }
+
+    /**
+     * Returns the list of the pages which correspond to the criteria given
+     * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param locale {@link Locale}
+     * @return the list in form of a Collection object
+     */
+    public static Collection<IWhatsNew> selectPagesByCriterias( Timestamp dateLimit, Locale locale )
+    {
+        return _dao.selectPagesByCriterias( dateLimit, locale );
+    }
+
+    /**
+     * Returns the list of the portlets which correspond to the criteria given
+     * @param dateLimit the timestamp giving the beginning of the period to watch
+     * @param locale {@link Locale}
+     * @return the list in form of a Collection object
+     */
+    public static Collection<IWhatsNew> selectPortletsByCriterias( Timestamp dateLimit, Locale locale )
+    {
+        return _dao.selectPortletsByCriterias( dateLimit, locale );
     }
 
     /**
@@ -74,24 +97,70 @@ public final class WhatsNewHome
     }
 
     /**
-     * Returns the list of the portlets which correspond to the criteria given
-     * @param dateLimit the timestamp giving the beginning of the period to watch
+     * Returns the list of pages which correspond to the list of page IDs
+     * @param listPageIds the list of page IDs
      * @param locale {@link Locale}
-     * @return the list in form of a Collection object
+     * @return a collection of {@link IWhatsNew}
      */
-    public static Collection<IWhatsNew> selectPortletsByCriterias( Timestamp dateLimit, Locale locale )
+    public static Collection<IWhatsNew> selectPages( List<Integer> listPageIds, Locale locale )
     {
-        return _dao.selectPortletsByCriterias( dateLimit, locale );
+        return _dao.selectPages( listPageIds, locale );
     }
 
     /**
-     * Returns the list of the pages which correspond to the criteria given
-     * @param dateLimit the timestamp giving the beginning of the period to watch
+     * Returns the list of portlets which correspond to the list of page IDs
+     * @param listPortletIds the list of portlets IDs
      * @param locale {@link Locale}
-     * @return the list in form of a Collection object
+     * @return a collection of {@link IWhatsNew}
      */
-    public static Collection<IWhatsNew> selectPagesByCriterias( Timestamp dateLimit, Locale locale )
+    public static Collection<IWhatsNew> selectPortlets( List<Integer> listPortletIds, Locale locale )
     {
-        return _dao.selectPagesByCriterias( dateLimit, locale );
+        return _dao.selectPortlets( listPortletIds, locale );
+    }
+
+    /**
+     * Returns the list of documents which correspond to the list of page IDs
+     * @param listPortletDocumentLinks the list of page IDs
+     * @param locale {@link Locale}
+     * @return a collection of {@link IWhatsNew}
+     */
+    public static Collection<IWhatsNew> selectDocuments( List<PortletDocumentLink> listPortletDocumentLinks,
+        Locale locale )
+    {
+        return _dao.selectDocuments( listPortletDocumentLinks, locale );
+    }
+
+    /**
+     * Check if the given page is out of date
+     * @param nPageId the page ID
+     * @param dateLimit the date limit
+     * @return true if it is out of date, false otherwise
+     */
+    public static boolean isPageOutOfDate( int nPageId, Timestamp dateLimit )
+    {
+        return _dao.isPageOutOfDate( nPageId, dateLimit );
+    }
+
+    /**
+     * Check if the given portlet is out of date
+     * @param nPortletId the portlet ID
+     * @param dateLimit the date limit
+     * @return true if it is out of date, false otherwise
+     */
+    public static boolean isPortletOutOfDate( int nPortletId, Timestamp dateLimit )
+    {
+        return _dao.isPortletOutOfDate( nPortletId, dateLimit );
+    }
+
+    /**
+     * Check if the given document is out of date
+     * @param pdLink {@link PortletDocumentLink}
+     * @param dateLimit the date limit
+     * @param plugin {@link Plugin}
+     * @return true if it is out of date, false otherwise
+     */
+    public static boolean isDocumentOutOfDate( PortletDocumentLink pdLink, Timestamp dateLimit, Plugin plugin )
+    {
+        return _dao.isDocumentOutOfDate( pdLink, dateLimit, plugin );
     }
 }

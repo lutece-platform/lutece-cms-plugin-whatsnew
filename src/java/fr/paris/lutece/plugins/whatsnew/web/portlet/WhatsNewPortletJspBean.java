@@ -33,37 +33,51 @@
  */
 package fr.paris.lutece.plugins.whatsnew.web.portlet;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang.StringUtils;
-
 import fr.paris.lutece.plugins.whatsnew.business.ElementOrderEnum;
+import fr.paris.lutece.plugins.whatsnew.business.IWhatsNew;
+import fr.paris.lutece.plugins.whatsnew.business.PortletDocumentLink;
 import fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortlet;
+import fr.paris.lutece.plugins.whatsnew.service.WhatsNewPlugin;
 import fr.paris.lutece.plugins.whatsnew.service.WhatsNewService;
+import fr.paris.lutece.plugins.whatsnew.service.parameter.WhatsNewParameterService;
 import fr.paris.lutece.plugins.whatsnew.service.portlet.WhatsNewPortletService;
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
-import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.web.portlet.PortletJspBean;
-import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
+
+import org.apache.commons.lang.StringUtils;
+
+import java.sql.Timestamp;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * 
+ *
  * WhatsNewPortletJspBean
- * 
+ *
  */
 public class WhatsNewPortletJspBean extends PortletJspBean
 {
     // Right
     public static final String RIGHT_MANAGE_ADMIN_SITE = "CORE_ADMIN_SITE";
+
+    /**
+     * Get the WhatsNewPlugin
+     * @return a {@link Plugin}
+     */
+    private Plugin getPlugin(  )
+    {
+        return PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
+    }
 
     /**
      * Returns portlet "what's new" 's creation form
@@ -74,12 +88,11 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     {
         String strPageId = request.getParameter( PARAMETER_PAGE_ID );
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
-        int nPeriodByDefault = AppPropertiesService.getPropertyInt( WhatsNewConstants.PROPERTY_FRAGMENT_DAYS_COMBO_DEFAULT_VALUE,
-                7 );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( WhatsNewConstants.MARK_COMBO_PERIOD, getComboDays(  ) );
-        model.put( WhatsNewConstants.MARK_DEFAULT_PERIOD, nPeriodByDefault );
+        model.put( WhatsNewConstants.MARK_COMBO_PERIOD, WhatsNewService.getInstance(  ).getComboDays(  ) );
+        model.put( WhatsNewConstants.MARK_LIST_PARAM_DEFAULT_VALUES,
+            WhatsNewParameterService.getInstance(  ).getParamDefaultValues( getPlugin(  ) ) );
         initializeModel( model );
 
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
@@ -105,7 +118,9 @@ public class WhatsNewPortletJspBean extends PortletJspBean
             if ( portlet != null )
             {
                 Map<String, Object> model = new HashMap<String, Object>(  );
-                model.put( WhatsNewConstants.MARK_COMBO_PERIOD, getComboDays(  ) );
+                model.put( WhatsNewConstants.MARK_MODERATED_ELEMENTS_LIST,
+                    WhatsNewService.getInstance(  ).getModeratedElementsListHtml( portlet, getLocale(  ) ) );
+                model.put( WhatsNewConstants.MARK_COMBO_PERIOD, WhatsNewService.getInstance(  ).getComboDays(  ) );
                 model.put( WhatsNewConstants.MARK_WHATSNEW_PORTLET, portlet );
                 initializeModel( model );
 
@@ -190,6 +205,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
                 if ( StringUtils.isBlank( strError ) )
                 {
                     WhatsNewPortletService.getInstance(  ).update( portlet );
+                    setModeratedElements( portlet, request );
                     strUrl = getPageUrl( portlet.getPageId(  ) );
                 }
                 else
@@ -213,39 +229,13 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     }
 
     /**
-     * Initialize the number of days' combo
-     * @return the html code of the combo
-     */
-    private ReferenceList getComboDays(  )
-    {
-        // Returns the list stored in the property file and the default value
-        String strListe = AppPropertiesService.getProperty( WhatsNewConstants.PROPERTY_FRAGMENT_DAYS_COMBO_LIST );
-
-        ReferenceList comboDaysList = new ReferenceList(  );
-
-        StringTokenizer strTokSemiColon = new StringTokenizer( strListe, WhatsNewConstants.DELIMITER_SEMI_COLON );
-
-        while ( strTokSemiColon.hasMoreTokens(  ) )
-        {
-            StringTokenizer strTokComa = new StringTokenizer( strTokSemiColon.nextToken(  ),
-                    WhatsNewConstants.DELIMITER_COMA );
-
-            while ( strTokComa.hasMoreTokens(  ) )
-            {
-                comboDaysList.addItem( Integer.parseInt( strTokComa.nextToken(  ) ), strTokComa.nextToken(  ) );
-            }
-        }
-
-        return comboDaysList;
-    }
-
-    /**
      * Initialize the model
      * @param model the model
      */
     private void initializeModel( Map<String, Object> model )
     {
-    	model.put( WhatsNewConstants.MARK_PLUGIN_DOCUMENT_ACTIVATED, WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) );
+        model.put( WhatsNewConstants.MARK_PLUGIN_DOCUMENT_ACTIVATED,
+            WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) );
         model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DATE, ElementOrderEnum.DATE.getId(  ) );
         model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ALPHA, ElementOrderEnum.ALPHA.getId(  ) );
         model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ASC, WhatsNewConstants.DISPLAY_ASC );
@@ -276,10 +266,10 @@ public class WhatsNewPortletJspBean extends PortletJspBean
                     String strIsAscSort = request.getParameter( WhatsNewConstants.PARAMETER_DISPLAY_ORDER_ASC_DESC );
                     boolean bIsAscSort = false;
 
-                    if ( StringUtils.isNotBlank( strIsAscSort ) && StringUtils.isNumeric( strIsAscSort ) && 
-                    		Integer.parseInt( strIsAscSort ) == WhatsNewConstants.DISPLAY_ASC )
+                    if ( StringUtils.isNotBlank( strIsAscSort ) && StringUtils.isNumeric( strIsAscSort ) &&
+                            ( Integer.parseInt( strIsAscSort ) == WhatsNewConstants.DISPLAY_ASC ) )
                     {
-                    	bIsAscSort = true;
+                        bIsAscSort = true;
                     }
 
                     String strPeriod = request.getParameter( WhatsNewConstants.PARAMETER_PERIOD );
@@ -294,10 +284,12 @@ public class WhatsNewPortletJspBean extends PortletJspBean
                         String strShowDocuments = request.getParameter( WhatsNewConstants.PARAMETER_SHOW_DOCUMENTS );
                         String strShowPortlets = request.getParameter( WhatsNewConstants.PARAMETER_SHOW_PORTLETS );
                         String strShowPages = request.getParameter( WhatsNewConstants.PARAMETER_SHOW_PAGES );
+                        String strIsDynamic = request.getParameter( WhatsNewConstants.PARAMETER_IS_DYNAMIC );
 
                         portlet.setShowDocuments( strShowDocuments != null );
                         portlet.setShowPortlets( strShowPortlets != null );
                         portlet.setShowPages( strShowPages != null );
+                        portlet.setDynamic( strIsDynamic != null );
                         portlet.setAscSort( bIsAscSort );
 
                         portlet.setPeriod( nPeriod );
@@ -329,5 +321,100 @@ public class WhatsNewPortletJspBean extends PortletJspBean
         }
 
         return strError;
+    }
+
+    /**
+     * Set the moderated elements
+     * @param portlet the portlet
+     * @param request {@link HttpServletRequest}
+     */
+    private void setModeratedElements( WhatsNewPortlet portlet, HttpServletRequest request )
+    {
+        Timestamp limitTimestamp = WhatsNewService.getInstance(  )
+                                                  .getTimestampFromPeriodAndCurrentDate( portlet.getPeriod(  ),
+                request.getLocale(  ) );
+        WhatsNewPortletService.getInstance(  ).removeModeratedElements( portlet, getPlugin(  ) );
+        setModeratedPortlets( portlet, request, limitTimestamp );
+        setModeratedPages( portlet, request, limitTimestamp );
+        setModeratedDocuments( portlet, request, limitTimestamp );
+    }
+
+    /**
+     * Set the moderated portlets
+     * @param portlet the portlet
+     * @param request {@link HttpServletRequest}
+     * @param limitTimestamp the date limit
+     */
+    private void setModeratedPortlets( WhatsNewPortlet portlet, HttpServletRequest request, Timestamp limitTimestamp )
+    {
+        if ( !portlet.getDynamic(  ) && portlet.getShowPortlets(  ) )
+        {
+            for ( IWhatsNew whatsNew : WhatsNewService.getInstance(  )
+                                                      .getPortletsByCriterias( limitTimestamp, request.getLocale(  ) ) )
+            {
+                String strModeratedElement = request.getParameter( WhatsNewConstants.PARAMETER_MODERATED_PORTLET +
+                        WhatsNewConstants.UNDERSCORE + whatsNew.getPortletId(  ) );
+
+                if ( StringUtils.isNotBlank( strModeratedElement ) )
+                {
+                    WhatsNewPortletService.getInstance(  )
+                                          .createModeratedPortlet( portlet.getId(  ), whatsNew.getPortletId(  ),
+                        getPlugin(  ) );
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the moderated pages
+     * @param portlet the portlet
+     * @param request {@link HttpServletRequest}
+     * @param limitTimestamp the date limit
+     */
+    private void setModeratedPages( WhatsNewPortlet portlet, HttpServletRequest request, Timestamp limitTimestamp )
+    {
+        if ( !portlet.getDynamic(  ) && portlet.getShowPages(  ) )
+        {
+            for ( IWhatsNew whatsNew : WhatsNewService.getInstance(  )
+                                                      .getPagesByCriterias( limitTimestamp, request.getLocale(  ) ) )
+            {
+                String strModeratedElement = request.getParameter( WhatsNewConstants.PARAMETER_MODERATED_PAGE +
+                        WhatsNewConstants.UNDERSCORE + whatsNew.getPageId(  ) );
+
+                if ( StringUtils.isNotBlank( strModeratedElement ) )
+                {
+                    WhatsNewPortletService.getInstance(  )
+                                          .createModeratedPage( portlet.getId(  ), whatsNew.getPageId(  ), getPlugin(  ) );
+                }
+            }
+        }
+    }
+
+    /**
+     * Set the moderated documents
+     * @param portlet the document
+     * @param request {@link HttpServletRequest}
+     * @param limitTimestamp the date limit
+     */
+    private void setModeratedDocuments( WhatsNewPortlet portlet, HttpServletRequest request, Timestamp limitTimestamp )
+    {
+        if ( !portlet.getDynamic(  ) && portlet.getShowDocuments(  ) )
+        {
+            for ( IWhatsNew whatsNew : WhatsNewService.getInstance(  )
+                                                      .getDocumentsByCriterias( limitTimestamp, request.getLocale(  ) ) )
+            {
+                String strModeratedElement = request.getParameter( WhatsNewConstants.PARAMETER_MODERATED_DOCUMENT +
+                        WhatsNewConstants.UNDERSCORE + whatsNew.getPortletId(  ) + WhatsNewConstants.UNDERSCORE +
+                        whatsNew.getDocumentId(  ) );
+
+                if ( StringUtils.isNotBlank( strModeratedElement ) )
+                {
+                    PortletDocumentLink pdLink = new PortletDocumentLink( whatsNew.getPortletId(  ),
+                            whatsNew.getDocumentId(  ) );
+                    WhatsNewPortletService.getInstance(  )
+                                          .createModeratedDocument( portlet.getId(  ), pdLink, getPlugin(  ) );
+                }
+            }
+        }
     }
 }

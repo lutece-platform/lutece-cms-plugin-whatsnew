@@ -31,61 +31,60 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business;
+package fr.paris.lutece.plugins.whatsnew.business.parameter;
 
-import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
-import fr.paris.lutece.portal.web.constants.Parameters;
-
-import java.util.Locale;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
 
 
 /**
  *
- * WhatsNewTypePage
+ * WhatsNewParameterHome
  *
  */
-public class WhatsNewTypePage extends WhatsNew
+public final class WhatsNewParameterHome
 {
-    private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/page/moderated_page.html";
+    // Static variable pointed at the DAO instance
+    private static IWhatsNewParameterDAO _dao = (IWhatsNewParameterDAO) SpringContextService.getPluginBean( "whatsnew",
+            "whatsnew.whatsNewParameterDAO" );
 
     /**
      * Constructor
      */
-    public WhatsNewTypePage(  )
+    private WhatsNewParameterHome(  )
     {
     }
 
     /**
-     * {@inheritDoc}
+     * Load all the parameter default values
+     * @param plugin {@link Plugin}
+     * @return a list of ReferenceItem
      */
-    public String getTemplateModeratedElement(  )
+    public static ReferenceList findAll( Plugin plugin )
     {
-        return TEMPLATE_MODERATED_ELEMENTS_LIST;
+        return _dao.selectAll( plugin );
     }
 
     /**
-     * {@inheritDoc}
-     */
-    public void setWhatsNewType( Locale locale )
+    * Load the parameter value
+    * @param strParameterKey the parameter key
+    * @param plugin {@link Plugin}
+    * @return The parameter value
+    */
+    public static ReferenceItem findByKey( String strParameterKey, Plugin plugin )
     {
-        WhatsNewType whatsNewType = new WhatsNewType(  );
-        whatsNewType.setLocale( locale );
-        whatsNewType.setClassName( this.getClass(  ).getName(  ) );
-        whatsNewType.setLabelType( WhatsNewConstants.PROPERTY_TYPE_PAGE );
-        setWhatsNewType( whatsNewType );
+        return _dao.load( strParameterKey, plugin );
     }
 
     /**
-     * {@inheritDoc}
+     * Update the parameter
+     * @param param The parameter
+     * @param plugin {@link Plugin}
      */
-    public String buildUrl(  )
+    public static void update( ReferenceItem param, Plugin plugin )
     {
-        StringBuilder sbUrl = new StringBuilder(  );
-        sbUrl.append( WhatsNewConstants.INTERROGATION_MARK );
-        sbUrl.append( Parameters.PAGE_ID );
-        sbUrl.append( WhatsNewConstants.EQUAL );
-        sbUrl.append( getPageId(  ) );
-
-        return sbUrl.toString(  );
+        _dao.store( param, plugin );
     }
 }

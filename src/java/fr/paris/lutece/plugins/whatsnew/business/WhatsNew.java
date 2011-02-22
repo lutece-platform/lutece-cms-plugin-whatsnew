@@ -45,12 +45,13 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * 
+ *
  * WhatsNew
- *  
+ *
  */
 public abstract class WhatsNew implements IWhatsNew
 {
+    public static final String RESOURCE_TYPE = "WHATSNEW";
     private WhatsNewType _whatsNewType;
 
     /** Title of the whatsnew object */
@@ -66,6 +67,7 @@ public abstract class WhatsNew implements IWhatsNew
     private int _nPageId;
     private int _nPortletId;
     private int _nDocumentId;
+    private String _strType;
 
     /**
      * Creates a new WhatsNew object.
@@ -198,6 +200,24 @@ public abstract class WhatsNew implements IWhatsNew
     public void setPortletId( int nPortletId )
     {
         _nPortletId = nPortletId;
+    }
+
+    /**
+     * Get the type
+     * @return the type
+     */
+    public String getType(  )
+    {
+        return _strType;
+    }
+
+    /**
+     * Set the type
+     * @param strType the type
+     */
+    public void setType( String strType )
+    {
+        _strType = strType;
     }
 
     /////////////////////////////////////////////////////////////////////////////

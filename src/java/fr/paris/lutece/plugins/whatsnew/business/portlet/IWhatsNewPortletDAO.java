@@ -33,14 +33,18 @@
  */
 package fr.paris.lutece.plugins.whatsnew.business.portlet;
 
+import fr.paris.lutece.plugins.whatsnew.business.PortletDocumentLink;
 import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
 import fr.paris.lutece.portal.business.portlet.Portlet;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+
+import java.util.List;
 
 
 /**
- * 
+ *
  * IWhatsNewPortletDAO
- * 
+ *
  */
 public interface IWhatsNewPortletDAO extends IPortletInterfaceDAO
 {
@@ -68,4 +72,103 @@ public interface IWhatsNewPortletDAO extends IPortletInterfaceDAO
      * @param portlet The instance of the object portlet
      */
     void store( Portlet portlet );
+
+    /**
+     * Find all WhatsNew portlets
+     * @return a list of {@link WhatsNewPortlet}
+     */
+    List<WhatsNewPortlet> findAll(  );
+
+    /**
+     * Load all page IDs associated to the given whatNewPortletId
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     * @return a list of page IDs
+     */
+    List<Integer> loadPageIdsFromWhatsNewPortletId( int nWhatsNewPortletId, Plugin plugin );
+
+    /**
+     * Insert a link between a whatsnew portlet and a page
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param nPageId the page ID
+     * @param plugin {@link Plugin}
+     */
+    void insertPageForWhatsNew( int nWhatsNewPortletId, int nPageId, Plugin plugin );
+
+    /**
+     * Delete all links of a whatsnew portlet to the pages
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    void deletePagesFromWhatsNew( int nWhatsNewPortletId, Plugin plugin );
+
+    /**
+     * Delete a link between a whatsnew portlet and a page
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param nPageId the page ID
+     * @param plugin {@link Plugin}
+     */
+    void deleteLinkWhatsNewPortletToPage( int nWhatsNewPortletId, int nPageId, Plugin plugin );
+
+    /**
+     * Load all portlet IDs associated to the given whatsNewPortletId
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     * @return a list of portlet IDs
+     */
+    List<Integer> loadPortletIdsFromWhatsNewPortletId( int nWhatsNewPortletId, Plugin plugin );
+
+    /**
+     * Insert a link between a whatsnew portlet and a portlet
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param nPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    void insertPortletForWhatsNew( int nWhatsNewPortletId, int nPortletId, Plugin plugin );
+
+    /**
+     * Delete all links of a whatsnew portlet to the portlets
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param plugin {@link Plugin}
+     */
+    void deletePortletsFromWhatsNew( int nWhatsNewPortletId, Plugin plugin );
+
+    /**
+     * Delete a link between a whatsnew portlet and a portlet
+     * @param nWhatsNewPortletId the ID of the whatsnew portlet
+     * @param nPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    void deleteLinkWhatsNewPortletToPortlet( int nWhatsNewPortletId, int nPortletId, Plugin plugin );
+
+    /**
+     * Load all the documents associated to the given whatsnewPortletId
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     * @return a list of {@link PortletDocumentLink}
+     */
+    List<PortletDocumentLink> loadDocumentFromWhatsNewPortletId( int nWhatsNewPortletId, Plugin plugin );
+
+    /**
+     * Insert a link between a document and a whatsnew portlet
+     * @param nWhatsNewId the ID of the whatsnew portlet
+     * @param pdLink {@link PortletDocumentLink}
+     * @param plugin {@link Plugin}
+     */
+    void insertDocumentForWhatsNew( int nWhatsNewId, PortletDocumentLink pdLink, Plugin plugin );
+
+    /**
+     * Delete all links of a whatsnew portlet to the documents
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param plugin {@link Plugin}
+     */
+    void deleteDocumentsFromWhatsNew( int nWhatsNewPortletId, Plugin plugin );
+
+    /**
+     * Delete a link between a whatsnew portlet and a document
+     * @param nWhatsNewPortletId the ID of the portlet
+     * @param pdLink {@link PortletDocumentLink}
+     * @param plugin {@link Plugin}
+     */
+    void deleteLinkWhatsNewPortletToDocument( int nWhatsNewPortletId, PortletDocumentLink pdLink, Plugin plugin );
 }

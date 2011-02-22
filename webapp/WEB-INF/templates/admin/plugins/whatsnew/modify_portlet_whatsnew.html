@@ -1,45 +1,104 @@
+<#macro checkboxWhatsNew name checked disabled value=1>
+	<input type="checkbox" name="${name}" value="${value}" 
+		<#if checked>
+			checked="checked" 
+		</#if>
+		<#if disabled>
+			disabled="disabled" 
+		</#if>
+	/>
+</#macro>
+
+<!-- ELEMENT TYPES -->
 <p>
-	<label>#i18n{whatsnew.create_portlet_whatsnew.labelTypes} :</label>
-	<input class="checkbox" type="checkbox" name="show_portlets" value="1" <#if portlet.showPortlets>checked="checked"</#if>/>&nbsp;#i18n{whatsnew.portlet.type.portlets}
+	<label>#i18n{whatsnew.modify_portlet_whatsnew.labelTypes} :</label>
+	<@checkboxWhatsNew name="show_portlets" checked=portlet.showPortlets disabled=!portlet.dynamic />&nbsp;#i18n{whatsnew.portlet.type.portlets}
 	<br />
 	<label>&nbsp;</label>
-	<input class="checkbox" type="checkbox" name="show_pages" value="1" <#if portlet.showPages>checked="checked"</#if>/>&nbsp;#i18n{whatsnew.portlet.type.pages}
+	<@checkboxWhatsNew name="show_pages" checked=portlet.showPages disabled=!portlet.dynamic />&nbsp;#i18n{whatsnew.portlet.type.pages}
 	<#if plugin_document_activated>
 		<br />
 		<label>&nbsp;</label>
-		<input class="checkbox" type="checkbox" name="show_documents" value="1" <#if portlet.showDocuments>checked="checked"</#if>/>&nbsp;#i18n{whatsnew.portlet.type.documents}
+		<@checkboxWhatsNew name="show_documents" checked=portlet.showDocuments disabled=!portlet.dynamic />&nbsp;#i18n{whatsnew.portlet.type.documents}
 	</#if>
 </p>
+<!-- PERIOD -->
 <p>
-	<label>#i18n{whatsnew.create_portlet_whatsnew.labelPeriod} :</label>
-	<@combo name="text_period" default_value="${whatsnew_portlet.period}" items=combo_period />
+	<label>#i18n{whatsnew.modify_portlet_whatsnew.labelPeriod} * :</label>
+	<#if !portlet.dynamic>
+		<#assign additionalParameters = "disabled=\"disabled\"">
+		<@comboWithParams name="text_period" default_value="${whatsnew_portlet.period}" items=combo_period additionalParameters=additionalParameters />
+	<#else>
+		<@combo name="text_period" default_value="${whatsnew_portlet.period}" items=combo_period />
+	</#if>
 </p>
+<#if !portlet.dynamic>
+	<p>
+		<label>&nbsp;</label>
+		<span class="alert">#i18n{whatsnew.modify_portlet_whatsnew.labelModifyPeriodAndTypeWarning}</span>
+	</p>
+</#if>
+<!-- NB ELEMENTS -->
 <p>
-	<label>#i18n{whatsnew.create_portlet_whatsnew.labelNbElements} :</label>
-	<input type="text" name="text_nbElements" value="${whatsnew_portlet.nbElementsMax}" size="2" maxlength="2"/>
+	<label>#i18n{whatsnew.modify_portlet_whatsnew.labelNbElements} * :</label>
+	<input type="text" name="text_nbElements" value="${whatsnew_portlet.nbElementsMax}" size="2" maxlength="2" />
 </p>
+<!-- DISPLAY ORDER -->
 <p>
-	<label>#i18n{whatsnew.create_portlet_whatsnew.labelDisplayOrder} :</label>
-	<#if whatsnew_portlet.elementsOrder == 0>
-        <input class="radio" type="radio" name="display_order" value="${display_order_date}" checked="checked"/>&nbsp;#i18n{whatsnew.portlet.order.timesequential}
-        <br />
-    	<label>&nbsp;</label>
-        <input class="radio" type="radio" name="display_order" value="${display_order_alpha}" />&nbsp;#i18n{whatsnew.portlet.order.alphabetical}
-    <#else>
-        <input class="radio" type="radio" name="display_order" value="${display_order_date}" />&nbsp;#i18n{whatsnew.portlet.order.timesequential}
-        <br />
-    	<label>&nbsp;</label>
-        <input class="radio" type="radio" name="display_order" value="${display_order_alpha}" checked="checked"/>&nbsp;#i18n{whatsnew.portlet.order.alphabetical}
-    </#if>
+	<label>#i18n{whatsnew.modify_portlet_whatsnew.labelDisplayOrder} * :</label>
+	<input type="radio" name="display_order" value="${display_order_date}" 
+		<#if whatsnew_portlet.elementsOrder=display_order_date>
+			checked="checked"
+		</#if>
+	/>
+	&nbsp;#i18n{whatsnew.portlet.order.timesequential}
+	<br />
+	<label>&nbsp;</label>
+	<input type="radio" name="display_order" value="${display_order_alpha}" 
+		<#if whatsnew_portlet.elementsOrder=display_order_alpha>
+			checked="checked"
+		</#if>
+	/>
+	&nbsp;#i18n{whatsnew.portlet.order.alphabetical}
     <br />
     <label>&nbsp;</label>
     <select name="display_order_asc_desc">
-   		<#if whatsnew_portlet.ascSort>
-    		<option value="${display_order_desc}">#i18n{whatsnew.portlet.order.descending}</option>
-    		<option value="${display_order_asc}" selected="selected">#i18n{whatsnew.portlet.order.ascending}</option>
-    	<#else>
-    		<option value="${display_order_desc}" selected="selected">#i18n{whatsnew.portlet.order.descending}</option>
-    		<option value="${display_order_asc}">#i18n{whatsnew.portlet.order.ascending}</option>
-    	</#if>
+		<option value="${display_order_asc}" 
+			<#if whatsnew_portlet.ascSort>
+   				selected="selected" 
+   			</#if>
+		>#i18n{whatsnew.portlet.order.ascending}</option>
+		<option value="${display_order_desc}"
+   			<#if !whatsnew_portlet.ascSort>
+   				selected="selected" 
+   			</#if>
+    	>#i18n{whatsnew.portlet.order.descending}</option>
    	</select>
 </p>
+<!-- DYNAMIC -->
+<p>
+	<label>#i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamic} :</label>
+	<input class="checkbox" type="checkbox" name="is_dynamic" value="1"<#if whatsnew_portlet.dynamic>checked="checked"</#if>/>
+	<br />
+	<label>&nbsp;</label>
+	#i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamicComment}
+	<#if whatsnew_portlet.dynamic>
+		<br />
+		<label>&nbsp;</label>
+		<span class="alert">#i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamicWarning}</span>
+	</#if>
+</p>
+
+<#if !whatsnew_portlet.dynamic>
+	<#if portlet.showPortlets>
+		<input type="hidden" name="show_portlets" value="1" />
+	</#if>
+	<#if portlet.showPages>
+		<input type="hidden" name="show_pages" value="1" />
+	</#if>
+	<#if portlet.showDocuments>
+		<input type="hidden" name="show_documents" value="1" />
+	</#if>
+	<input type="hidden" name="text_period" value="${whatsnew_portlet.period}" />
+	${moderated_elements_list}
+</#if>

@@ -35,9 +35,9 @@ package fr.paris.lutece.plugins.whatsnew.business;
 
 
 /**
- * 
+ *
  * ElementOrderEnum
- * 
+ *
  */
 public enum ElementOrderEnum
 {DATE( 0 ),

@@ -19,7 +19,7 @@
 		<min-core-version>2.3.0</min-core-version>
 		<max-core-version></max-core-version>	
    </core-version-dependency>
-   <db-pool-required>0</db-pool-required>
+   <db-pool-required>1</db-pool-required>
 
    <!-- Portlet parameters -->
    <portlets>
@@ -38,6 +38,38 @@
            <portlet-create-specific-form-template></portlet-create-specific-form-template>
            <portlet-modify-specific-form-template></portlet-modify-specific-form-template>
      </portlet>
-   </portlets>
+	</portlets>
 
+	<!-- RBAC Resources -->
+	<rbac-resource-types>
+		<rbac-resource-type>
+			<rbac-resource-type-class>
+				fr.paris.lutece.plugins.whatsnew.service.WhatsNewResourceIdService
+			</rbac-resource-type-class>
+		</rbac-resource-type>
+	</rbac-resource-types>
+	
+	<!-- Admin Dashboard  components -->
+    <admindashboard-components>
+    	<admindashboard-component>
+            <dashboard-component-name>whatsNewAdminDashboardComponent</dashboard-component-name>
+            <dashboard-component-class>fr.paris.lutece.plugins.whatsnew.web.WhatsNewAdminDashboardComponent</dashboard-component-class>
+        </admindashboard-component>
+    </admindashboard-components>
+    
+    <!-- Daemons -->
+	<daemons>
+		<daemon>
+			<daemon-id>whatsNewModeratedElementsCleaner</daemon-id>
+			<daemon-name>
+				whatsnew.daemon.whatsNewModeratedElementsCleaner.name
+			</daemon-name>
+			<daemon-description>
+				whatsnew.daemon.whatsNewModeratedElementsCleaner.description
+			</daemon-description>
+			<daemon-class>
+				fr.paris.lutece.plugins.whatsnew.service.daemon.DaemonCleanerModeratedElements
+			</daemon-class>
+		</daemon>
+	</daemons>
  </plug-in>

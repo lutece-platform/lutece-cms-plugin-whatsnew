@@ -104,6 +104,7 @@ public interface IWhatsNew extends XmlContent
     void setDateUpdate( Timestamp date );
 
     /**
+     * Get the document ID
      * @return Returns the _nDocumentId.
      */
     int getDocumentId(  );
@@ -115,24 +116,46 @@ public interface IWhatsNew extends XmlContent
     void setDocumentId( int nDocumentId );
 
     /**
+     * Get the page ID
      * @return Returns the _nPageId.
      */
     int getPageId(  );
 
     /**
+     * Set the page ID
      * @param nPageId The _nPageId to set.
      */
     void setPageId( int nPageId );
 
     /**
+     * Get the portlet ID
      * @return Returns the _nPortletId.
      */
     int getPortletId(  );
 
     /**
+     * Set the portlet ID
      * @param nPortletId The _nPortletId to set.
      */
     void setPortletId( int nPortletId );
+
+    /**
+     * Get the type of the whatsnew
+     * @return the type of the whatsnew
+     */
+    String getType(  );
+
+    /**
+     * Set the type of the whatsnew
+     * @param strType the type
+     */
+    void setType( String strType );
+
+    /**
+     * Get the HTML code of the moderated elements
+     * @return HTML code
+     */
+    String getTemplateModeratedElement(  );
 
     /**
      * Build the url of the whatsnew

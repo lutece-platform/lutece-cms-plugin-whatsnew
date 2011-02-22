@@ -46,6 +46,9 @@ import java.util.Locale;
  */
 public class WhatsNewTypeDocument extends WhatsNew
 {
+    private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/document/moderated_document.html";
+    private String _strAssociatedPortletName;
+
     /**
      * Constructor
      */
@@ -54,9 +57,34 @@ public class WhatsNewTypeDocument extends WhatsNew
     }
 
     /**
-    * Set the whatsnew type
-    * @param locale {@link Locale}
-    */
+     * Set the reference portlet name
+     * @param strRefPortletName the reference portlet name
+     */
+    public void setAssociatedPortletName( String strRefPortletName )
+    {
+		_strAssociatedPortletName = strRefPortletName;
+	}
+
+    /**
+     * Get the reference portlet name
+     * @return the portlet name
+     */
+	public String getAssociatedPortletName(  )
+	{
+		return _strAssociatedPortletName;
+	}
+
+	/**
+     * {@inheritDoc}
+     */
+    public String getTemplateModeratedElement(  )
+    {
+        return TEMPLATE_MODERATED_ELEMENTS_LIST;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void setWhatsNewType( Locale locale )
     {
         WhatsNewType whatsNewType = new WhatsNewType(  );
@@ -67,9 +95,8 @@ public class WhatsNewTypeDocument extends WhatsNew
     }
 
     /**
-    * Build the url of the whatsnew
-    * @return the url
-    */
+     * {@inheritDoc}
+     */
     public String buildUrl(  )
     {
         StringBuilder sbUrl = new StringBuilder(  );

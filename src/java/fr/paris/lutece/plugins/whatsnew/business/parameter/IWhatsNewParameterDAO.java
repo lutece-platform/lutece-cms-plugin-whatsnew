@@ -31,61 +31,39 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business;
+package fr.paris.lutece.plugins.whatsnew.business.parameter;
 
-import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
-import fr.paris.lutece.portal.web.constants.Parameters;
-
-import java.util.Locale;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
 
 
 /**
  *
- * WhatsNewTypePage
+ * IWhatsNewParameterDAO
  *
  */
-public class WhatsNewTypePage extends WhatsNew
+public interface IWhatsNewParameterDAO
 {
-    private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/page/moderated_page.html";
+    /**
+    * Load all the parameter default values
+    * @param plugin Plugin
+    * @return a list of ReferenceItem
+    */
+    ReferenceList selectAll( Plugin plugin );
 
     /**
-     * Constructor
-     */
-    public WhatsNewTypePage(  )
-    {
-    }
+    * Load the parameter value
+    * @param strParameterKey the parameter key
+    * @param plugin Plugin
+    * @return The parameter
+    */
+    ReferenceItem load( String strParameterKey, Plugin plugin );
 
     /**
-     * {@inheritDoc}
+     * Update the parameter value
+     * @param param The parameter
+     * @param plugin Plugin
      */
-    public String getTemplateModeratedElement(  )
-    {
-        return TEMPLATE_MODERATED_ELEMENTS_LIST;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void setWhatsNewType( Locale locale )
-    {
-        WhatsNewType whatsNewType = new WhatsNewType(  );
-        whatsNewType.setLocale( locale );
-        whatsNewType.setClassName( this.getClass(  ).getName(  ) );
-        whatsNewType.setLabelType( WhatsNewConstants.PROPERTY_TYPE_PAGE );
-        setWhatsNewType( whatsNewType );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String buildUrl(  )
-    {
-        StringBuilder sbUrl = new StringBuilder(  );
-        sbUrl.append( WhatsNewConstants.INTERROGATION_MARK );
-        sbUrl.append( Parameters.PAGE_ID );
-        sbUrl.append( WhatsNewConstants.EQUAL );
-        sbUrl.append( getPageId(  ) );
-
-        return sbUrl.toString(  );
-    }
+    void store( ReferenceItem param, Plugin plugin );
 }

@@ -31,61 +31,61 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.whatsnew.business;
+package fr.paris.lutece.plugins.whatsnew.service.parameter;
 
-import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
-import fr.paris.lutece.portal.web.constants.Parameters;
-
-import java.util.Locale;
+import fr.paris.lutece.plugins.whatsnew.business.parameter.WhatsNewParameterHome;
+import fr.paris.lutece.portal.service.plugin.Plugin;
+import fr.paris.lutece.util.ReferenceItem;
+import fr.paris.lutece.util.ReferenceList;
 
 
 /**
  *
- * WhatsNewTypePage
+ * WhatsNewParameterService
  *
  */
-public class WhatsNewTypePage extends WhatsNew
+public class WhatsNewParameterService
 {
-    private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/page/moderated_page.html";
+    private static WhatsNewParameterService _singleton;
 
     /**
-     * Constructor
+     * Return the WhatsNewParameterService singleton
+     * @return the WhatsNewParameterService singleton
      */
-    public WhatsNewTypePage(  )
+    public static WhatsNewParameterService getInstance(  )
+    {
+        if ( _singleton == null )
+        {
+            _singleton = new WhatsNewParameterService(  );
+        }
+
+        return _singleton;
+    }
+
+    /**
+     * Init
+     */
+    public void init(  )
     {
     }
 
     /**
-     * {@inheritDoc}
+     * Load all the parameter default values
+     * @param plugin {@link Plugin}
+     * @return a list of ReferenceItem
      */
-    public String getTemplateModeratedElement(  )
+    public ReferenceList getParamDefaultValues( Plugin plugin )
     {
-        return TEMPLATE_MODERATED_ELEMENTS_LIST;
+        return WhatsNewParameterHome.findAll( plugin );
     }
 
     /**
-     * {@inheritDoc}
+     * Update the parameter
+     * @param param The parameter
+     * @param plugin {@link Plugin}
      */
-    public void setWhatsNewType( Locale locale )
+    public void update( ReferenceItem param, Plugin plugin )
     {
-        WhatsNewType whatsNewType = new WhatsNewType(  );
-        whatsNewType.setLocale( locale );
-        whatsNewType.setClassName( this.getClass(  ).getName(  ) );
-        whatsNewType.setLabelType( WhatsNewConstants.PROPERTY_TYPE_PAGE );
-        setWhatsNewType( whatsNewType );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public String buildUrl(  )
-    {
-        StringBuilder sbUrl = new StringBuilder(  );
-        sbUrl.append( WhatsNewConstants.INTERROGATION_MARK );
-        sbUrl.append( Parameters.PAGE_ID );
-        sbUrl.append( WhatsNewConstants.EQUAL );
-        sbUrl.append( getPageId(  ) );
-
-        return sbUrl.toString(  );
+        WhatsNewParameterHome.update( param, plugin );
     }
 }

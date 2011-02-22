@@ -1,0 +1,47 @@
+<#function isModerated moderated_elements_list element>
+	<#if moderated_elements_list?? && moderated_elements_list?has_content && element??>
+		<#list moderated_elements_list as moderated_element>
+			<#if moderated_element.portletId == element.portletId && moderated_element.documentId == element.documentId>
+				<#return true>
+			</#if>
+		</#list>
+	</#if>
+	<#return false>
+</#function>
+<br />
+<div class="content-box">
+	<h2>#i18n{whatsnew.modify_portlet_whatsnew.labelListModeratedDocuments}</h2>
+	<table>
+		<tr>
+			<th>#i18n{whatsnew.modify_portlet_whatsnew.columnName}</th>
+			<th>#i18n{whatsnew.modify_portlet_whatsnew.columnDescription}</th>
+			<th>#i18n{whatsnew.modify_portlet_whatsnew.columnType}</th>
+			<th>#i18n{whatsnew.modify_portlet_whatsnew.columnAssociatedPortlet}</th>
+			<th>#i18n{whatsnew.modify_portlet_whatsnew.columnDateUpdate}</th>
+		</tr>
+		<#list elements_list as element>
+			<tr>
+				<td>
+					<input type="checkbox" name="moderated_document_${element.portletId}_${element.documentId}" value="1" 
+						<#if isModerated( moderated_elements_list, element )>
+							checked="checked" 
+						</#if>
+					/>
+					${element.title} 
+				</td>
+				<td>
+					${element.description}
+				</td>
+				<td>
+					${element.type}
+				</td>
+				<td>
+					${element.associatedPortletName}
+				</td>
+				<td>
+					${element.dateUpdate?date}
+				</td>
+			</tr>
+		</#list>
+	</table>
+</div>

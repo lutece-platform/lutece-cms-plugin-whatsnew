@@ -38,9 +38,9 @@ import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
 
 
 /**
- * 
+ *
  * WhatsNewPlugin
- * 
+ *
  */
 public class WhatsNewPlugin extends PluginDefaultImplementation
 {

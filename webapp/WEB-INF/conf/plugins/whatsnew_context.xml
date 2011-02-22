@@ -5,6 +5,7 @@
 	<!-- package sqlquery -->
 	<bean id="whatsnew.whatsNewDAO"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewDAO" />
 	<bean id="whatsnew.whatsNewPortletDAO"  class="fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortletDAO" />
+	<bean id="whatsnew.whatsNewParameterDAO"  class="fr.paris.lutece.plugins.whatsnew.business.parameter.WhatsNewParameterDAO" />
 	
 	<!-- package whatsnew -->
 	<bean id="whatsnew.whatsNewTypeDocument"  class="fr.paris.lutece.plugins.whatsnew.business.WhatsNewTypeDocument" />

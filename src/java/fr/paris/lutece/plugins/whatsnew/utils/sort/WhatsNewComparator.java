@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.whatsnew.business.ElementOrderEnum;
 import fr.paris.lutece.plugins.whatsnew.business.IWhatsNew;
 
 import java.io.Serializable;
+
 import java.util.Comparator;
 
 
@@ -47,9 +48,8 @@ import java.util.Comparator;
  */
 public class WhatsNewComparator implements Comparator<IWhatsNew>, Serializable
 {
-	private static final long serialVersionUID = 1035663950193810359L;
-	
-	private int _nOrder;
+    private static final long serialVersionUID = 1035663950193810359L;
+    private int _nOrder;
     private boolean _bIsAscSort;
 
     /**
