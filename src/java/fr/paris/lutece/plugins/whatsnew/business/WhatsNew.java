@@ -40,6 +40,7 @@ import fr.paris.lutece.util.xml.XmlUtil;
 import org.apache.commons.lang.StringUtils;
 
 import java.sql.Timestamp;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -240,6 +241,16 @@ public abstract class WhatsNew implements IWhatsNew
      */
     public String getXml( HttpServletRequest request )
     {
+    	Locale locale;
+
+        if ( request != null )
+        {
+            locale = request.getLocale(  );
+        }
+        else
+        {
+            locale = Locale.getDefault(  );
+        }
         StringBuffer strXml = new StringBuffer(  );
         XmlUtil.beginElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_ELEMENT );
 
@@ -252,7 +263,7 @@ public abstract class WhatsNew implements IWhatsNew
         }
 
         XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_DATE_UPDATE,
-            DateUtil.getDateString( getDateUpdate(  ), request.getLocale(  ) ) );
+            DateUtil.getDateString( getDateUpdate(  ), locale ) );
 
         XmlUtil.addElementHtml( strXml, WhatsNewConstants.TAG_WHATS_NEW_URL, buildUrl(  ) );
 

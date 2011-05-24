@@ -243,7 +243,16 @@ public class WhatsNewPortlet extends Portlet
         XmlUtil.beginElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_PORTLET );
 
         List<IWhatsNew> listElements = new ArrayList<IWhatsNew>(  );
-        Locale locale = request.getLocale(  );
+        Locale locale;
+
+        if ( request != null )
+        {
+            locale = request.getLocale(  );
+        }
+        else
+        {
+            locale = Locale.getDefault(  );
+        }
         Timestamp limitTimestamp = WhatsNewService.getInstance(  ).getTimestampFromPeriodAndCurrentDate( _nPeriod,
                 locale );
 
@@ -302,8 +311,11 @@ public class WhatsNewPortlet extends Portlet
         // one portlet in a page
         String strMinDisplay = null;
 
-        strMinDisplay = request.getParameter( WhatsNewConstants.PARAMETER_MIN_DISPLAY + WhatsNewConstants.UNDERSCORE +
-                getId(  ) );
+        if ( request != null )
+        {
+        	strMinDisplay = request.getParameter( WhatsNewConstants.PARAMETER_MIN_DISPLAY + WhatsNewConstants.UNDERSCORE +
+                    getId(  ) );
+        }
 
         if ( StringUtils.isNotBlank( strMinDisplay ) )
         {
