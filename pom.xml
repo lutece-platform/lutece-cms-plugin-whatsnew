@@ -10,7 +10,7 @@
 	<groupId>fr.paris.lutece.plugins</groupId>
 	<artifactId>plugin-whatsnew</artifactId>
 	<packaging>lutece-plugin</packaging>
-	<version>2.1.1-SNAPSHOT</version>
+	<version>2.1.1</version>
 	<name>Lutece whatsnew plugin</name>
 
 	<repositories>
@@ -43,8 +43,8 @@
 		<jiraComponentId>10058</jiraComponentId>
 	</properties>
     <scm>
-        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/cms/plugin-whatsnew</connection>
-        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/cms/plugin-whatsnew</developerConnection>
-        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/trunk/plugins/cms/plugin-whatsnew</url>
+        <connection>scm:svn:http://dev.lutece.paris.fr/svn/lutece/portal/tags/plugin-whatsnew-2.1.1</connection>
+        <developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/tags/plugin-whatsnew-2.1.1</developerConnection>
+        <url>http://dev.lutece.paris.fr/viewvc/lutece/portal/tags/plugin-whatsnew-2.1.1</url>
     </scm>
 </project>
