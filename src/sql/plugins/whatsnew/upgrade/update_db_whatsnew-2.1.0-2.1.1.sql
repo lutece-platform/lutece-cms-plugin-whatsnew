@@ -19,10 +19,10 @@ CREATE TABLE whatsnew_page_whatsnew (
 );
 
 --
--- Table structure for table whatsnew_page_whatsnew
+-- Table structure for table whatsnew_document_whatsnew
 --
-DROP TABLE IF EXISTS whatsnew_page_whatsnew;
-CREATE TABLE whatsnew_page_whatsnew (
+DROP TABLE IF EXISTS whatsnew_document_whatsnew;
+CREATE TABLE whatsnew_document_whatsnew (
 	id_whatsnew_portlet int default 0 NOT NULL,
 	id_portlet int default 0 NOT NULL,
 	id_document int default 0 NOT NULL,
