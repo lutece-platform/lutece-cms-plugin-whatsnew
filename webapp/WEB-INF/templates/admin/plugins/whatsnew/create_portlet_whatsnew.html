@@ -24,73 +24,55 @@
 	<#return "">
 </#function>
 <div class="control-group">
-<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelTypes} :</label>
-<div class="controls">
-<label class="checkbox">
-<input class="checkbox" type="checkbox" name="show_portlets" value="1" ${getChecked('show_portlets',list_param_default_values)} />&nbsp;#i18n{whatsnew.portlet.type.portlets}
-</label>
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" > &nbsp;</label>
-<div class="controls">
-<label class="checkbox">
-<input class="checkbox" type="checkbox" name="show_pages" value="1" ${getChecked('show_pages',list_param_default_values)} />&nbsp;#i18n{whatsnew.portlet.type.pages}
-</label>
-</div>
-</div>
-<#if plugin_document_activated>
-<div class="control-group">
-<label class="control-label" > &nbsp;</label>
-<div class="controls">
-<label class="checkbox">
-<input class="checkbox" type="checkbox" name="show_documents" value="1" ${getChecked('show_documents',list_param_default_values)} />&nbsp;#i18n{whatsnew.portlet.type.documents}
-</label>
-</div>
-</div>
-</#if>
-<div class="control-group">
-<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelPeriod} * :</label>
-<div class="controls">
-<@combo name="text_period" default_value="${getName('text_period',list_param_default_values)}" items=combo_period />
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelNbElements} * :</label>
-<div class="controls">
-<input type="text" name="text_nbElements" value="${getName('text_nbElements',list_param_default_values)}" size="2" maxlength="2"/>
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelDisplayOrder} * :</label>
-<div class="controls">
-<input class="radio" type="radio" name="display_order" value="${display_order_date}" 
-<#if getName('display_order',list_param_default_values) == display_order_date?string>checked="checked"</#if> />&nbsp;#i18n{whatsnew.portlet.order.timesequential}
-</div>
-</div>
-<div class="control-group">
-<label class="control-label" > &nbsp;</label>
-   <div class="controls">
-<input class="radio" type="radio" name="display_order" value="${display_order_alpha}" 
-	<#if getName('display_order',list_param_default_values) == display_order_alpha?string>checked="checked" </#if>/>&nbsp;#i18n{whatsnew.portlet.order.alphabetical}
-		</div>
-	</div>
-<div class="control-group">
-<label class="control-label" > &nbsp;</label>
-  <select name="display_order_asc_desc">
-<option value="${display_order_asc}"
-<#if getName('display_order_asc_desc',list_param_default_values) == display_order_asc?string> selected="selected" </#if>   		>#i18n{whatsnew.portlet.order.ascending}</option>
-<option value="${display_order_desc}" <#if getName('display_order_asc_desc',list_param_default_values) == display_order_desc?string>				selected="selected" </#if>>#i18n{whatsnew.portlet.order.descending}</option>
-</select>
-</div>
-<div class="control-group">
-		<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelIsDynamic} :</label>
+<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelTypes}</label>
 	<div class="controls">
-	<input class="checkbox" type="checkbox" name="is_dynamic" value="1" ${getChecked('is_dynamic',list_param_default_values)} />
+		<label class="checkbox inline">
+			<input class="checkbox" type="checkbox" name="show_portlets" value="1" ${getChecked('show_portlets',list_param_default_values)} />&nbsp;#i18n{whatsnew.portlet.type.portlets}
+		</label>
+		<label class="checkbox inline">
+			<input class="checkbox" type="checkbox" name="show_pages" value="1" ${getChecked('show_pages',list_param_default_values)} />&nbsp;#i18n{whatsnew.portlet.type.pages}
+			</label>
+		<#if plugin_document_activated>
+		<label class="checkbox inline">
+			<input class="checkbox" type="checkbox" name="show_documents" value="1" ${getChecked('show_documents',list_param_default_values)} />&nbsp;#i18n{whatsnew.portlet.type.documents}
+		</label>
+		</#if>
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label" > #i18n{whatsnew.create_portlet_whatsnew.labelPeriod} *</label>
+	<div class="controls">
+		<@comboWithParams name="text_period" default_value="${getName('text_period',list_param_default_values)}" additionalParameters="class=\"input-normal\"" items=combo_period />
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label"> #i18n{whatsnew.create_portlet_whatsnew.labelNbElements} *</label>
+	<div class="controls">
+		<input type="text" name="text_nbElements" value="${getName('text_nbElements',list_param_default_values)}" class="input-mini" maxlength="2"/>
+	</div>
+</div>
+<div class="control-group">
+<label class="control-label"> #i18n{whatsnew.create_portlet_whatsnew.labelDisplayOrder} *</label>
+	<div class="controls">
+		<input class="radio inline" type="radio" name="display_order" value="${display_order_date}" <#if getName('display_order',list_param_default_values) == display_order_date?string>checked="checked"</#if> />&nbsp;#i18n{whatsnew.portlet.order.timesequential}
+		<input class="radio inline" type="radio" name="display_order" value="${display_order_alpha}" <#if getName('display_order',list_param_default_values) == display_order_alpha?string>checked="checked" </#if>/>&nbsp;#i18n{whatsnew.portlet.order.alphabetical}
+		&nbsp;
+		<select name="display_order_asc_desc" class="inline input-normal">
+			<option value="${display_order_asc}" <#if getName('display_order_asc_desc',list_param_default_values) == display_order_asc?string> selected="selected" </#if>   		>#i18n{whatsnew.portlet.order.ascending}</option>
+			<option value="${display_order_desc}" <#if getName('display_order_asc_desc',list_param_default_values) == display_order_desc?string>				selected="selected" </#if>>#i18n{whatsnew.portlet.order.descending}</option>
+		</select>
+	</div>
+</div>
+<div class="control-group">
+	<label class="control-label" for=""></label>
+		<div class="controls">
+			<label class="checkbox" for="is_dynamic"> #i18n{whatsnew.create_portlet_whatsnew.labelIsDynamic}
+				<input class="checkbox" type="checkbox" name="is_dynamic" value="1" ${getChecked('is_dynamic',list_param_default_values)} />
+			</label>
+			<div class="alert alert-error">
+				#i18n{whatsnew.create_portlet_whatsnew.labelIsDynamicComment} &nbsp;
+				#i18n{whatsnew.create_portlet_whatsnew.labelIsDynamicWarning}
+			</div>
 		</div>
 	</div>
 	
-	<span class="label label-warning">#i18n{whatsnew.create_portlet_whatsnew.labelIsDynamicComment} &nbsp;</span>
-
-	<span class="label label-warning">#i18n{whatsnew.create_portlet_whatsnew.labelIsDynamicWarning}</span>
-
