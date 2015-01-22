@@ -1,7 +1,6 @@
 <#macro checkboxWhatsNew name checked disabled value=1>
 	<input type="checkbox" name="${name}" value="${value}" <#if checked>checked="checked"</#if><#if disabled> disabled="disabled"</#if>>
 </#macro>
-
 <!-- ELEMENT TYPES -->
 <div class="form-group">
 	<label> #i18n{whatsnew.modify_portlet_whatsnew.labelTypes}</label>
@@ -37,13 +36,14 @@
 <!-- NB ELEMENTS -->
 <div class="form-group">
 	<label> #i18n{whatsnew.modify_portlet_whatsnew.labelNbElements} *</label>
-	<input type="text" name="text_nbElements" value="${whatsnew_portlet.nbElementsMax}" class="form-control" maxlength="2">
+	<input type="text" name="text_nbElements" value="${whatsnew_portlet.nbElementsMax}" class="form-control inline" size="4" maxlength="2">
 </div>
 <!-- DISPLAY ORDER -->
 <div class="form-group">
 	<label> #i18n{whatsnew.modify_portlet_whatsnew.labelDisplayOrder} *</label>
-	<label class="radio-inline">
-		<input type="radio" name="display_order" value="${display_order_date}"	<#if whatsnew_portlet.elementsOrder=display_order_date>checked="checked"</#if>>		&nbsp;#i18n{whatsnew.portlet.order.timesequential}
+	<label class="radio-inline">	
+		<input type="radio" name="display_order" value="${display_order_date}"	<#if whatsnew_portlet.elementsOrder=display_order_date>checked="checked"</#if>>
+		&nbsp;#i18n{whatsnew.portlet.order.timesequential}
 	</label>
 	<label class="radio-inline">
 		<input type="radio" name="display_order" value="${display_order_alpha}"<#if whatsnew_portlet.elementsOrder=display_order_alpha> checked="checked"</#if>>
@@ -54,12 +54,11 @@
 		</select>
 	</label>
 	<!-- DYNAMIC -->
-	</div>
 </div>
 <div class="form-group">
 	<div class="checkbox"> 
-		<label for="is_dynamic">#i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamic}
-			<input type="checkbox" name="is_dynamic" value="1"<#if whatsnew_portlet.dynamic>checked="checked"</#if>>
+		<label for="is_dynamic">
+			<input type="checkbox" name="is_dynamic" id="is_dynamic" value="1" <#if whatsnew_portlet.dynamic>checked="checked"</#if>> #i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamic}
 		</label>
 		<#if whatsnew_portlet.dynamic>
 			<div class="callout callout-warning">#i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamicComment} #i18n{whatsnew.modify_portlet_whatsnew.labelIsDynamicWarning}</div>
