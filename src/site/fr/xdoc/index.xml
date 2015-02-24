@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Plugin Whats New</title>
+    </properties>
+    <body>
+        <section name="Plugin Whats New">
+            <subsection name="Introduction">
+                <p>
+                    Ce plugin propose une rubrique (portlet) qui affiche les dernières modifications
+                    dans les documents publiés.
+                </p>
+            </subsection>
+        </section>
+    </body>
+</document>
