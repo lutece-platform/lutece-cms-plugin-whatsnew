@@ -40,6 +40,7 @@ import fr.paris.lutece.plugins.whatsnew.service.WhatsNewPlugin;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.List;
 
@@ -49,25 +50,9 @@ import java.util.List;
  * WhatsNewPortletService
  *
  */
+@ApplicationScoped
 public class WhatsNewPortletService
 {
-    private static WhatsNewPortletService _singleton;
-
-    /**
-     * Return the ThemeService singleton
-     *
-     * @return the ThemeService singleton
-     */
-    public static WhatsNewPortletService getInstance(  )
-    {
-        if ( _singleton == null )
-        {
-            _singleton = new WhatsNewPortletService(  );
-        }
-
-        return _singleton;
-    }
-
     /**
      * Init
      */

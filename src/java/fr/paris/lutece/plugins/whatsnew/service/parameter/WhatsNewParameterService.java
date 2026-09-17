@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.whatsnew.business.parameter.WhatsNewParameterHome
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
+import jakarta.enterprise.context.ApplicationScoped;
 
 
 /**
@@ -44,24 +45,9 @@ import fr.paris.lutece.util.ReferenceList;
  * WhatsNewParameterService
  *
  */
+@ApplicationScoped
 public class WhatsNewParameterService
 {
-    private static WhatsNewParameterService _singleton;
-
-    /**
-     * Return the WhatsNewParameterService singleton
-     * @return the WhatsNewParameterService singleton
-     */
-    public static WhatsNewParameterService getInstance(  )
-    {
-        if ( _singleton == null )
-        {
-            _singleton = new WhatsNewParameterService(  );
-        }
-
-        return _singleton;
-    }
-
     /**
      * Init
      */

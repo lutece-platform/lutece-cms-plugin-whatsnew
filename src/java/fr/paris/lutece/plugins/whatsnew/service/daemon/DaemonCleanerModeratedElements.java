@@ -43,6 +43,7 @@ import fr.paris.lutece.portal.service.daemon.Daemon;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.sql.Timestamp;
 
@@ -63,51 +64,47 @@ public class DaemonCleanerModeratedElements extends Daemon
     public void run(  )
     {
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
+        WhatsNewPortletService portletService = CDI.current( ).select( WhatsNewPortletService.class ).get( );
+        WhatsNewService whatsNewService = CDI.current( ).select( WhatsNewService.class ).get( );
 
-        for ( WhatsNewPortlet portlet : WhatsNewPortletService.getInstance(  ).selectAll(  ) )
+        for ( WhatsNewPortlet portlet : portletService.selectAll(  ) )
         {
             String strLanguage = AppPropertiesService.getProperty( WhatsNewConstants.PROPERTY_DAEMON_MODERATED_ELEMENTS_CLEANER_LANGUAGE,
                     "fr" );
             Locale locale = new Locale( strLanguage );
-            Timestamp limitTimestamp = WhatsNewService.getInstance(  )
-                                                      .getTimestampFromPeriodAndCurrentDate( portlet.getPeriod(  ),
-                    locale );
+            Timestamp limitTimestamp = whatsNewService.getTimestampFromPeriodAndCurrentDate( portlet.getPeriod(  ), locale );
 
             // PAGES
-            List<Integer> listPageIds = WhatsNewPortletService.getInstance(  )
-                                                              .getPageIdsFromWhatsNewId( portlet.getId(  ), plugin );
+            List<Integer> listPageIds = portletService.getPageIdsFromWhatsNewId( portlet.getId(  ), plugin );
 
             for ( int nPageId : listPageIds )
             {
-                if ( WhatsNewService.getInstance(  ).isPageOutOfDate( nPageId, limitTimestamp ) )
+                if ( whatsNewService.isPageOutOfDate( nPageId, limitTimestamp ) )
                 {
-                    WhatsNewPortletService.getInstance(  ).removeModeratedPage( portlet.getId(  ), nPageId, plugin );
+                    portletService.removeModeratedPage( portlet.getId(  ), nPageId, plugin );
                 }
             }
 
             // PORTLETS
-            List<Integer> listPortletIds = WhatsNewPortletService.getInstance(  )
-                                                                 .getPortletIdsFromWhatsNewId( portlet.getId(  ), plugin );
+            List<Integer> listPortletIds = portletService.getPortletIdsFromWhatsNewId( portlet.getId(  ), plugin );
 
             for ( int nPortletId : listPortletIds )
             {
-                if ( WhatsNewService.getInstance(  ).isPortletOutOfDate( nPortletId, limitTimestamp ) )
+                if ( whatsNewService.isPortletOutOfDate( nPortletId, limitTimestamp ) )
                 {
-                    WhatsNewPortletService.getInstance(  ).removeModeratedPortlet( portlet.getId(  ), nPortletId, plugin );
+                    portletService.removeModeratedPortlet( portlet.getId(  ), nPortletId, plugin );
                 }
             }
 
             // DOCUMENT
-            List<PortletDocumentLink> listLinks = WhatsNewPortletService.getInstance(  )
-                                                                        .getDocumentsFromWhatsNewId( portlet.getId(  ),
-                    plugin );
+            List<PortletDocumentLink> listLinks = portletService.getDocumentsFromWhatsNewId( portlet.getId(  ), plugin );
             Plugin pluginDocument = PluginService.getPlugin( WhatsNewConstants.DOCUMENT_PLUGIN_NAME );
 
             for ( PortletDocumentLink pdLink : listLinks )
             {
-                if ( WhatsNewService.getInstance(  ).isDocumentOutOfDate( pdLink, limitTimestamp, pluginDocument ) )
+                if ( whatsNewService.isDocumentOutOfDate( pdLink, limitTimestamp, pluginDocument ) )
                 {
-                    WhatsNewPortletService.getInstance(  ).removeModeratedDocument( portlet.getId(  ), pdLink, plugin );
+                    portletService.removeModeratedDocument( portlet.getId(  ), pdLink, plugin );
                 }
             }
         }

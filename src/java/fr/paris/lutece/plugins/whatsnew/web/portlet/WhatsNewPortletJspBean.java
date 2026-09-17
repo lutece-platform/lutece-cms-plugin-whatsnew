@@ -47,17 +47,21 @@ import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
+import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.web.portlet.PortletJspBean;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Timestamp;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -65,10 +69,26 @@ import javax.servlet.http.HttpServletRequest;
  * WhatsNewPortletJspBean
  *
  */
+@RequestScoped
+@Named
 public class WhatsNewPortletJspBean extends PortletJspBean
 {
+    private static final long serialVersionUID = 1L;
+
     // Right
     public static final String RIGHT_MANAGE_ADMIN_SITE = "CORE_ADMIN_SITE";
+
+    private static final String ACTION_CREATE_PORTLET = "whatsnew.createPortlet";
+    private static final String ACTION_MODIFY_PORTLET = "whatsnew.modifyPortlet";
+
+    @Inject
+    private WhatsNewService _whatsNewService;
+
+    @Inject
+    private WhatsNewParameterService _parameterService;
+
+    @Inject
+    private WhatsNewPortletService _portletService;
 
     /**
      * Get the WhatsNewPlugin
@@ -90,9 +110,10 @@ public class WhatsNewPortletJspBean extends PortletJspBean
         String strPortletTypeId = request.getParameter( PARAMETER_PORTLET_TYPE_ID );
 
         Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( WhatsNewConstants.MARK_COMBO_PERIOD, WhatsNewService.getInstance(  ).getComboDays(  ) );
+        model.put( WhatsNewConstants.MARK_COMBO_PERIOD, _whatsNewService.getComboDays(  ) );
         model.put( WhatsNewConstants.MARK_LIST_PARAM_DEFAULT_VALUES,
-            WhatsNewParameterService.getInstance(  ).getParamDefaultValues( getPlugin(  ) ) );
+            _parameterService.getParamDefaultValues( getPlugin(  ) ) );
+        model.put( SecurityTokenService.MARK_TOKEN, getSecurityTokenService( ).getToken( request, ACTION_CREATE_PORTLET ) );
         initializeModel( model );
 
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
@@ -113,15 +134,25 @@ public class WhatsNewPortletJspBean extends PortletJspBean
         if ( StringUtils.isNotBlank( strPortletId ) && StringUtils.isNumeric( strPortletId ) )
         {
             int nPortletId = Integer.parseInt( strPortletId );
-            WhatsNewPortlet portlet = WhatsNewPortletService.getInstance(  ).getPortlet( nPortletId );
+            WhatsNewPortlet portlet = null;
+
+            try
+            {
+                portlet = _portletService.getPortlet( nPortletId );
+            }
+            catch( NullPointerException e )
+            {
+                portlet = null;
+            }
 
             if ( portlet != null )
             {
                 Map<String, Object> model = new HashMap<String, Object>(  );
                 model.put( WhatsNewConstants.MARK_MODERATED_ELEMENTS_LIST,
-                    WhatsNewService.getInstance(  ).getModeratedElementsListHtml( portlet, getLocale(  ) ) );
-                model.put( WhatsNewConstants.MARK_COMBO_PERIOD, WhatsNewService.getInstance(  ).getComboDays(  ) );
+                    _whatsNewService.getModeratedElementsListHtml( portlet, getLocale(  ) ) );
+                model.put( WhatsNewConstants.MARK_COMBO_PERIOD, _whatsNewService.getComboDays(  ) );
                 model.put( WhatsNewConstants.MARK_WHATSNEW_PORTLET, portlet );
+                model.put( SecurityTokenService.MARK_TOKEN, getSecurityTokenService( ).getToken( request, ACTION_MODIFY_PORTLET ) );
                 initializeModel( model );
 
                 HtmlTemplate template = getModifyTemplate( portlet, model );
@@ -150,6 +181,11 @@ public class WhatsNewPortletJspBean extends PortletJspBean
      */
     public String doCreate( HttpServletRequest request )
     {
+        if ( !getSecurityTokenService( ).validate( request, ACTION_CREATE_PORTLET ) )
+        {
+            return AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_INVALID_TOKEN, AdminMessage.TYPE_STOP );
+        }
+
         String strUrl = StringUtils.EMPTY;
         String strIdPage = request.getParameter( PARAMETER_PAGE_ID );
 
@@ -164,7 +200,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
                 portlet.setPageId( nIdPage );
 
                 // Creating portlet
-                WhatsNewPortletService.getInstance(  ).create( portlet );
+                _portletService.create( portlet );
 
                 //Displays the page with the new Portlet
                 strUrl = getPageUrl( portlet.getPageId(  ) );
@@ -190,13 +226,27 @@ public class WhatsNewPortletJspBean extends PortletJspBean
      */
     public String doModify( HttpServletRequest request )
     {
+        if ( !getSecurityTokenService( ).validate( request, ACTION_MODIFY_PORTLET ) )
+        {
+            return AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_INVALID_TOKEN, AdminMessage.TYPE_STOP );
+        }
+
         String strUrl = StringUtils.EMPTY;
         String strPortletId = request.getParameter( PARAMETER_PORTLET_ID );
 
         if ( StringUtils.isNotBlank( strPortletId ) && StringUtils.isNumeric( strPortletId ) )
         {
             int nPortletId = Integer.parseInt( strPortletId );
-            WhatsNewPortlet portlet = (WhatsNewPortlet) PortletHome.findByPrimaryKey( nPortletId );
+            WhatsNewPortlet portlet = null;
+
+            try
+            {
+                portlet = (WhatsNewPortlet) PortletHome.findByPrimaryKey( nPortletId );
+            }
+            catch( NullPointerException e )
+            {
+                portlet = null;
+            }
 
             if ( portlet != null )
             {
@@ -204,7 +254,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
 
                 if ( StringUtils.isBlank( strError ) )
                 {
-                    WhatsNewPortletService.getInstance(  ).update( portlet );
+                    _portletService.update( portlet );
                     setModeratedElements( portlet, request );
                     strUrl = getPageUrl( portlet.getPageId(  ) );
                 }
@@ -235,7 +285,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     private void initializeModel( Map<String, Object> model )
     {
         model.put( WhatsNewConstants.MARK_PLUGIN_DOCUMENT_ACTIVATED,
-            WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) );
+            _whatsNewService.isPluginDocumentActivated(  ) );
         model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DATE, ElementOrderEnum.DATE.getId(  ) );
         model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ALPHA, ElementOrderEnum.ALPHA.getId(  ) );
         model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ASC, WhatsNewConstants.DISPLAY_ASC );
@@ -330,10 +380,10 @@ public class WhatsNewPortletJspBean extends PortletJspBean
      */
     private void setModeratedElements( WhatsNewPortlet portlet, HttpServletRequest request )
     {
-        Timestamp limitTimestamp = WhatsNewService.getInstance(  )
+        Timestamp limitTimestamp = _whatsNewService
                                                   .getTimestampFromPeriodAndCurrentDate( portlet.getPeriod(  ),
                 request.getLocale(  ) );
-        WhatsNewPortletService.getInstance(  ).removeModeratedElements( portlet, getPlugin(  ) );
+        _portletService.removeModeratedElements( portlet, getPlugin(  ) );
         setModeratedPortlets( portlet, request, limitTimestamp );
         setModeratedPages( portlet, request, limitTimestamp );
         setModeratedDocuments( portlet, request, limitTimestamp );
@@ -349,7 +399,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     {
         if ( !portlet.getDynamic(  ) && portlet.getShowPortlets(  ) )
         {
-            for ( IWhatsNew whatsNew : WhatsNewService.getInstance(  )
+            for ( IWhatsNew whatsNew : _whatsNewService
                                                       .getPortletsByCriterias( limitTimestamp, request.getLocale(  ) ) )
             {
                 String strModeratedElement = request.getParameter( WhatsNewConstants.PARAMETER_MODERATED_PORTLET +
@@ -357,7 +407,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
 
                 if ( StringUtils.isNotBlank( strModeratedElement ) )
                 {
-                    WhatsNewPortletService.getInstance(  )
+                    _portletService
                                           .createModeratedPortlet( portlet.getId(  ), whatsNew.getPortletId(  ),
                         getPlugin(  ) );
                 }
@@ -375,7 +425,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     {
         if ( !portlet.getDynamic(  ) && portlet.getShowPages(  ) )
         {
-            for ( IWhatsNew whatsNew : WhatsNewService.getInstance(  )
+            for ( IWhatsNew whatsNew : _whatsNewService
                                                       .getPagesByCriterias( limitTimestamp, request.getLocale(  ) ) )
             {
                 String strModeratedElement = request.getParameter( WhatsNewConstants.PARAMETER_MODERATED_PAGE +
@@ -383,7 +433,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
 
                 if ( StringUtils.isNotBlank( strModeratedElement ) )
                 {
-                    WhatsNewPortletService.getInstance(  )
+                    _portletService
                                           .createModeratedPage( portlet.getId(  ), whatsNew.getPageId(  ), getPlugin(  ) );
                 }
             }
@@ -400,7 +450,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
     {
         if ( !portlet.getDynamic(  ) && portlet.getShowDocuments(  ) )
         {
-            for ( IWhatsNew whatsNew : WhatsNewService.getInstance(  )
+            for ( IWhatsNew whatsNew : _whatsNewService
                                                       .getDocumentsByCriterias( limitTimestamp, request.getLocale(  ) ) )
             {
                 String strModeratedElement = request.getParameter( WhatsNewConstants.PARAMETER_MODERATED_DOCUMENT +
@@ -411,7 +461,7 @@ public class WhatsNewPortletJspBean extends PortletJspBean
                 {
                     PortletDocumentLink pdLink = new PortletDocumentLink( whatsNew.getPortletId(  ),
                             whatsNew.getDocumentId(  ) );
-                    WhatsNewPortletService.getInstance(  )
+                    _portletService
                                           .createModeratedDocument( portlet.getId(  ), pdLink, getPlugin(  ) );
                 }
             }

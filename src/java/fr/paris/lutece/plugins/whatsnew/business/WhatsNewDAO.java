@@ -36,8 +36,9 @@ package fr.paris.lutece.plugins.whatsnew.business;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Timestamp;
 
@@ -53,6 +54,7 @@ import java.util.Locale;
  * WhatsNewDAO
  *
  */
+@ApplicationScoped
 public class WhatsNewDAO implements IWhatsNewDAO
 {
     private static final String SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS = " SELECT a.title, a.document_summary as description, a.date_modification, a.id_document, b.id_portlet, c.document_type_name " +

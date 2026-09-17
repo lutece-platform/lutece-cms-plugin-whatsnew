@@ -98,6 +98,7 @@ public final class WhatsNewConstants
     public static final String MESSAGE_NEGATIVE_PORTLET_NB_ELEMENTS_MAX = "whatsnew.message.portlet.nbelementsmax.negative";
     public static final String MESSAGE_NOT_NUMERIC = "whatsnew.message.portlet.not.numeric";
     public static final String MESSAGE_OBJECT_NOT_FOUND = "whatsnew.message.object_not_found";
+    public static final String MESSAGE_INVALID_TOKEN = "whatsnew.message.invalidToken";
 
     // TAGS
     public static final String TAG_WHATS_NEW_ELEMENT = "whatsnew-element";

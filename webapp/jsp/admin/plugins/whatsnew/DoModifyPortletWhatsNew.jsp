@@ -1,8 +1,6 @@
 <%@ page errorPage="../../ErrorPage.jsp" %>
 
-<jsp:useBean id="whatsNewPortlet" scope="session" class="fr.paris.lutece.plugins.whatsnew.web.portlet.WhatsNewPortletJspBean" />
+<%@page import="fr.paris.lutece.plugins.whatsnew.web.portlet.WhatsNewPortletJspBean"%>
 
-<%
-    whatsNewPortlet.init( request, fr.paris.lutece.plugins.whatsnew.web.portlet.WhatsNewPortletJspBean.RIGHT_MANAGE_ADMIN_SITE );
-    response.sendRedirect( whatsNewPortlet.doModify( request ) );
-%>
+${ whatsNewPortletJspBean.init( pageContext.request, WhatsNewPortletJspBean.RIGHT_MANAGE_ADMIN_SITE ) }
+${ pageContext.response.sendRedirect( whatsNewPortletJspBean.doModify( pageContext.request ) ) }

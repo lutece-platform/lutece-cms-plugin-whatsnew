@@ -44,7 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import fr.paris.lutece.plugins.whatsnew.business.IWhatsNew;
 import fr.paris.lutece.plugins.whatsnew.business.PortletDocumentLink;
@@ -59,11 +59,14 @@ import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.service.database.AppConnectionService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 
 /**
@@ -71,23 +74,26 @@ import fr.paris.lutece.util.html.HtmlTemplate;
  * WhatsNewService
  *
  */
+@ApplicationScoped
 public class WhatsNewService
 {
-    private static WhatsNewService _singleton;
+    @Inject
+    private Instance<IWhatsNew> _whatsNewBeans;
 
-    /**
-     * Return the WhatsNewService singleton
-     * @return the WhatsNewService singleton
-     */
-    public static WhatsNewService getInstance(  )
-    {
-        if ( _singleton == null )
-        {
-            _singleton = new WhatsNewService(  );
-        }
+    @Inject
+    @Named( "whatsnew.whatsNewTypePage" )
+    private IWhatsNew _whatsNewTypePage;
 
-        return _singleton;
-    }
+    @Inject
+    @Named( "whatsnew.whatsNewTypePortlet" )
+    private IWhatsNew _whatsNewTypePortlet;
+
+    @Inject
+    @Named( "whatsnew.whatsNewTypeDocument" )
+    private IWhatsNew _whatsNewTypeDocument;
+
+    @Inject
+    private WhatsNewPortletService _portletService;
 
     /**
      * Init
@@ -185,7 +191,7 @@ public class WhatsNewService
     {
         List<WhatsNewType> listWhatsNewTypes = new ArrayList<WhatsNewType>(  );
 
-        for ( IWhatsNew whatsNew : SpringContextService.getBeansOfType( IWhatsNew.class ) )
+        for ( IWhatsNew whatsNew : _whatsNewBeans )
         {
             whatsNew.setWhatsNewType( locale );
             listWhatsNewTypes.add( whatsNew.getWhatsNewType(  ) );
@@ -268,8 +274,7 @@ public class WhatsNewService
     public Collection<IWhatsNew> getModeratedPortlets( int nWhatsNewPortletId, Locale locale )
     {
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
-        List<Integer> listPortletIds = WhatsNewPortletService.getInstance(  )
-                                                             .getPortletIdsFromWhatsNewId( nWhatsNewPortletId, plugin );
+        List<Integer> listPortletIds = _portletService.getPortletIdsFromWhatsNewId( nWhatsNewPortletId, plugin );
 
         return WhatsNewHome.selectPortlets( listPortletIds, locale );
     }
@@ -283,8 +288,7 @@ public class WhatsNewService
     public Collection<IWhatsNew> getModeratedPages( int nWhatsNewPortletId, Locale locale )
     {
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
-        List<Integer> listPagesIds = WhatsNewPortletService.getInstance(  )
-                                                           .getPageIdsFromWhatsNewId( nWhatsNewPortletId, plugin );
+        List<Integer> listPagesIds = _portletService.getPageIdsFromWhatsNewId( nWhatsNewPortletId, plugin );
 
         return WhatsNewHome.selectPages( listPagesIds, locale );
     }
@@ -298,8 +302,7 @@ public class WhatsNewService
     public Collection<IWhatsNew> getModeratedDocuments( int nWhatsNewPortletId, Locale locale )
     {
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
-        List<PortletDocumentLink> listPortletDocumentLinks = WhatsNewPortletService.getInstance(  )
-                                                                                   .getDocumentsFromWhatsNewId( nWhatsNewPortletId,
+        List<PortletDocumentLink> listPortletDocumentLinks = _portletService.getDocumentsFromWhatsNewId( nWhatsNewPortletId,
                 plugin );
 
         return WhatsNewHome.selectDocuments( listPortletDocumentLinks, locale );
@@ -322,7 +325,7 @@ public class WhatsNewService
             // PAGES
             if ( whatsNewPortlet.getShowPages(  ) )
             {
-            	IWhatsNew whatsNew = (IWhatsNew) SpringContextService.getBean( WhatsNewConstants.BEAN_WHATSNEW_TYPE_PAGE );
+            	IWhatsNew whatsNew = _whatsNewTypePage;
                 whatsNew.setWhatsNewType( locale );
                 List<IWhatsNew> listElements = (List<IWhatsNew>) getPagesByCriterias( limitTimestamp, locale );
                 List<IWhatsNew> listModeratedElements = (List<IWhatsNew>) getModeratedPages( whatsNewPortlet.getId(  ), locale );
@@ -332,7 +335,7 @@ public class WhatsNewService
             // PORTLETS
             if ( whatsNewPortlet.getShowPortlets(  ) )
             {
-            	IWhatsNew whatsNew = (IWhatsNew) SpringContextService.getBean( WhatsNewConstants.BEAN_WHATSNEW_TYPE_PORTLET );
+            	IWhatsNew whatsNew = _whatsNewTypePortlet;
                 whatsNew.setWhatsNewType( locale );
                 List<IWhatsNew> listElements = (List<IWhatsNew>) getPortletsByCriterias( limitTimestamp, locale );
                 List<IWhatsNew> listModeratedElements = (List<IWhatsNew>) getModeratedPortlets( whatsNewPortlet.getId(  ), locale );
@@ -342,7 +345,7 @@ public class WhatsNewService
             // DOCUMENTS
             if ( whatsNewPortlet.getShowDocuments(  ) )
             {
-            	IWhatsNew whatsNew = (IWhatsNew) SpringContextService.getBean( WhatsNewConstants.BEAN_WHATSNEW_TYPE_DOCUMENT );
+            	IWhatsNew whatsNew = _whatsNewTypeDocument;
                 whatsNew.setWhatsNewType( locale );
                 List<IWhatsNew> listElements = (List<IWhatsNew>) getDocumentsByCriterias( limitTimestamp, locale );
                 List<IWhatsNew> listModeratedElements = (List<IWhatsNew>) getModeratedDocuments( whatsNewPortlet.getId(  ), locale );

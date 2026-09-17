@@ -34,9 +34,9 @@
 package fr.paris.lutece.plugins.whatsnew.business.parameter;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
+import jakarta.enterprise.inject.spi.CDI;
 
 
 /**
@@ -47,8 +47,7 @@ import fr.paris.lutece.util.ReferenceList;
 public final class WhatsNewParameterHome
 {
     // Static variable pointed at the DAO instance
-    private static IWhatsNewParameterDAO _dao = (IWhatsNewParameterDAO) SpringContextService.getPluginBean( "whatsnew",
-            "whatsnew.whatsNewParameterDAO" );
+    private static IWhatsNewParameterDAO _dao = CDI.current( ).select( IWhatsNewParameterDAO.class ).get( );
 
     /**
      * Constructor
