@@ -38,20 +38,25 @@ import fr.paris.lutece.plugins.whatsnew.service.WhatsNewService;
 import fr.paris.lutece.plugins.whatsnew.service.portlet.WhatsNewPortletService;
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.plugins.whatsnew.utils.sort.WhatsNewComparator;
-import fr.paris.lutece.portal.business.portlet.Portlet;
-import fr.paris.lutece.util.xml.XmlUtil;
+import fr.paris.lutece.portal.business.portlet.PortletHtmlContent;
+import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPathService;
+import fr.paris.lutece.util.date.DateUtil;
+import jakarta.enterprise.inject.spi.CDI;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Timestamp;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -59,8 +64,24 @@ import javax.servlet.http.HttpServletRequest;
  * WhatsNewPortlet
  *
  */
-public class WhatsNewPortlet extends Portlet
+public class WhatsNewPortlet extends PortletHtmlContent
 {
+    private static final String TEMPLATE_PORTLET = "skin/plugins/whatsnew/portlet/whatsnew_portlet.html";
+    private static final String MARK_PORTLET = "portlet";
+    private static final String MARK_SITE_PATH = "site_path";
+    private static final String MARK_ELEMENTS = "elements";
+    private static final String MARK_TOTAL = "total";
+    private static final String MARK_MIN_DISPLAY = "min_display";
+    private static final String MARK_MAX_DISPLAY = "max_display";
+    private static final String MARK_PREVIOUS_MIN = "previous_min";
+    private static final String MARK_NEXT_MIN = "next_min";
+    private static final String MARK_MIN_DISPLAY_PARAMETER = "min_display_parameter";
+    private static final String MARK_TITLE = "title";
+    private static final String MARK_TYPE = "type";
+    private static final String MARK_DESCRIPTION = "description";
+    private static final String MARK_DATE_UPDATE = "date_update";
+    private static final String MARK_URL = "url";
+
     private boolean _bShowDocuments;
     private boolean _bShowPortlets;
     private boolean _bShowPages;
@@ -75,7 +96,7 @@ public class WhatsNewPortlet extends Portlet
      */
     public WhatsNewPortlet(  )
     {
-        setPortletTypeId( WhatsNewPortletService.getInstance(  ).getPortletTypeId(  ) );
+        setPortletTypeId( CDI.current( ).select( WhatsNewPortletService.class ).get( ).getPortletTypeId(  ) );
     }
 
     /**
@@ -205,16 +226,6 @@ public class WhatsNewPortlet extends Portlet
     }
 
     /**
-     * Returns the XML content of the portlet with the XML header
-     * @param request The HTTP Servlet request
-     * @return The XML content of this portlet
-     */
-    public String getXmlDocument( HttpServletRequest request )
-    {
-        return XmlUtil.getXmlHeader(  ) + getXml( request );
-    }
-
-    /**
      * Check if the whatsnew is dynamic
      * @return true if it is dynamic, false otherwise
      */
@@ -233,112 +244,100 @@ public class WhatsNewPortlet extends Portlet
     }
 
     /**
-     * Returns the XML content of the portlet without the XML header
+     * Returns the HTML content of the portlet: the elements of the period, sorted and paginated
      * @param request The HTTP Servlet request
-     * @return The Xml content of this portlet
+     * @return The HTML content of this portlet
      */
-    public String getXml( HttpServletRequest request )
+    @Override
+    public String getHtmlContent( HttpServletRequest request )
     {
-        StringBuffer strXml = new StringBuffer(  );
-        XmlUtil.beginElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_PORTLET );
+        Locale locale = ( request != null ) ? request.getLocale( ) : Locale.getDefault( );
+        List<IWhatsNew> listElements = getElements( locale );
+        int nTotal = listElements.size( );
+        String strMinDisplayParameter = WhatsNewConstants.PARAMETER_MIN_DISPLAY + WhatsNewConstants.UNDERSCORE + getId( );
+        int nMinDisplay = getMinDisplay( request, strMinDisplayParameter );
+        int nMaxDisplay = Math.min( ( nMinDisplay + _nNbElementsMax ) - 1, nTotal );
 
-        List<IWhatsNew> listElements = new ArrayList<IWhatsNew>(  );
-        Locale locale;
+        List<Map<String, Object>> listDisplayed = new ArrayList<>( );
 
-        if ( request != null )
+        for ( IWhatsNew whatsNew : listElements.subList( Math.min( nMinDisplay - 1, nTotal ), nMaxDisplay ) )
         {
-            locale = request.getLocale(  );
+            Map<String, Object> element = new HashMap<>( );
+            element.put( MARK_TITLE, whatsNew.getTitle( ) );
+            element.put( MARK_TYPE, whatsNew.getWhatsNewType( ).getName( ) );
+            element.put( MARK_DESCRIPTION, whatsNew.getDescription( ) );
+            element.put( MARK_DATE_UPDATE, DateUtil.getDateString( whatsNew.getDateUpdate( ), locale ) );
+            element.put( MARK_URL, whatsNew.buildUrl( ) );
+            listDisplayed.add( element );
         }
-        else
-        {
-            locale = Locale.getDefault(  );
-        }
-        Timestamp limitTimestamp = WhatsNewService.getInstance(  ).getTimestampFromPeriodAndCurrentDate( _nPeriod,
-                locale );
+
+        Map<String, Object> model = new HashMap<>( );
+        model.put( MARK_PORTLET, this );
+        model.put( MARK_SITE_PATH, AppPathService.getPortalUrl( ) );
+        model.put( MARK_ELEMENTS, listDisplayed );
+        model.put( MARK_TOTAL, nTotal );
+        model.put( MARK_MIN_DISPLAY, nMinDisplay );
+        model.put( MARK_MAX_DISPLAY, nMaxDisplay );
+        model.put( MARK_MIN_DISPLAY_PARAMETER, strMinDisplayParameter );
+        model.put( MARK_PREVIOUS_MIN, Math.max( nMinDisplay - _nNbElementsMax, 1 ) );
+        model.put( MARK_NEXT_MIN, nMaxDisplay + 1 );
+
+        return AppTemplateService.getTemplate( TEMPLATE_PORTLET, locale, model ).getHtml( );
+    }
+
+    /**
+     * Returns the elements the portlet shows, sorted as configured
+     * @param locale The locale
+     * @return The sorted elements
+     */
+    private List<IWhatsNew> getElements( Locale locale )
+    {
+        WhatsNewService whatsNewService = CDI.current( ).select( WhatsNewService.class ).get( );
+        Timestamp limitTimestamp = whatsNewService.getTimestampFromPeriodAndCurrentDate( _nPeriod, locale );
+        List<IWhatsNew> listElements = new ArrayList<>( );
 
         if ( _bShowPages )
         {
-            Collection<IWhatsNew> listPages;
-
-            if ( !_bIsDynamic )
-            {
-                listPages = WhatsNewService.getInstance(  ).getModeratedPages( getId(  ), locale );
-            }
-            else
-            {
-                listPages = WhatsNewService.getInstance(  ).getPagesByCriterias( limitTimestamp, locale );
-            }
-
+            Collection<IWhatsNew> listPages = _bIsDynamic ? whatsNewService.getPagesByCriterias( limitTimestamp, locale )
+                    : whatsNewService.getModeratedPages( getId( ), locale );
             listElements.addAll( listPages );
         }
 
         if ( _bShowPortlets )
         {
-            Collection<IWhatsNew> listPortlets;
-
-            if ( !_bIsDynamic )
-            {
-                listPortlets = WhatsNewService.getInstance(  ).getModeratedPortlets( getId(  ), locale );
-            }
-            else
-            {
-                listPortlets = WhatsNewService.getInstance(  ).getPortletsByCriterias( limitTimestamp, locale );
-            }
-
+            Collection<IWhatsNew> listPortlets = _bIsDynamic ? whatsNewService.getPortletsByCriterias( limitTimestamp, locale )
+                    : whatsNewService.getModeratedPortlets( getId( ), locale );
             listElements.addAll( listPortlets );
         }
 
-        if ( _bShowDocuments && WhatsNewService.getInstance(  ).isPluginDocumentActivated(  ) )
+        if ( _bShowDocuments && whatsNewService.isPluginDocumentActivated( ) )
         {
-            Collection<IWhatsNew> listDocuments;
-
-            if ( !_bIsDynamic )
-            {
-                listDocuments = WhatsNewService.getInstance(  ).getModeratedDocuments( getId(  ), locale );
-            }
-            else
-            {
-                listDocuments = WhatsNewService.getInstance(  ).getDocumentsByCriterias( limitTimestamp, locale );
-            }
-
+            Collection<IWhatsNew> listDocuments = _bIsDynamic ? whatsNewService.getDocumentsByCriterias( limitTimestamp, locale )
+                    : whatsNewService.getModeratedDocuments( getId( ), locale );
             listElements.addAll( listDocuments );
         }
 
         Collections.sort( listElements, new WhatsNewComparator( _nElementsOrder, _bIsAscSort ) );
 
-        // retrieve from request the current display id parameter : to paginate the results
-        // the request parameter is postfixed by the portlet id to be able to handle more than
-        // one portlet in a page
-        String strMinDisplay = null;
+        return listElements;
+    }
 
-        if ( request != null )
+    /**
+     * Returns the index of the first element to display, read from the request parameter of this portlet
+     * @param request The HTTP Servlet request
+     * @param strMinDisplayParameter The name of the request parameter holding that index
+     * @return The index of the first element, 1 when the parameter is absent or not a number
+     */
+    private int getMinDisplay( HttpServletRequest request, String strMinDisplayParameter )
+    {
+        String strMinDisplay = ( request != null ) ? request.getParameter( strMinDisplayParameter ) : null;
+
+        if ( StringUtils.isNumeric( strMinDisplay ) )
         {
-        	strMinDisplay = request.getParameter( WhatsNewConstants.PARAMETER_MIN_DISPLAY + WhatsNewConstants.UNDERSCORE +
-                    getId(  ) );
+            return Math.max( Integer.parseInt( strMinDisplay ), 1 );
         }
 
-        if ( StringUtils.isNotBlank( strMinDisplay ) )
-        {
-            XmlUtil.addElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_MIN_DISPLAY, strMinDisplay );
-        }
-        else
-        {
-            XmlUtil.addElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_MIN_DISPLAY, 1 );
-        }
-
-        // retrieve the number of elements to display in a portlet
-        // this is filtered in the xsl in order to allow easy pagination
-        XmlUtil.addElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_NUMBER_DISPLAY, _nNbElementsMax );
-
-        // get the xml list of elements
-        for ( IWhatsNew whatsnew : listElements )
-        {
-            strXml.append( whatsnew.getXml( request ) );
-        }
-
-        XmlUtil.endElement( strXml, WhatsNewConstants.TAG_WHATS_NEW_PORTLET );
-
-        return addPortletTags( strXml );
+        return 1;
     }
 
     /**
@@ -346,7 +345,7 @@ public class WhatsNewPortlet extends Portlet
      */
     public void update(  )
     {
-        WhatsNewPortletService.getInstance(  ).update( this );
+        CDI.current( ).select( WhatsNewPortletService.class ).get( ).update( this );
     }
 
     /**
@@ -354,6 +353,6 @@ public class WhatsNewPortlet extends Portlet
      */
     public void remove(  )
     {
-        WhatsNewPortletService.getInstance(  ).remove( this );
+        CDI.current( ).select( WhatsNewPortletService.class ).get( ).remove( this );
     }
 }

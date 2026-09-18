@@ -37,6 +37,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
 
 
 /**
@@ -44,6 +45,7 @@ import fr.paris.lutece.util.sql.DAOUtil;
  * WhatsNewParameterDAO
  *
  */
+@ApplicationScoped
 public class WhatsNewParameterDAO implements IWhatsNewParameterDAO
 {
     private static final String TRUE = "1";

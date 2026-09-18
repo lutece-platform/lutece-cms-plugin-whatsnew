@@ -35,6 +35,7 @@ package fr.paris.lutece.plugins.whatsnew.service;
 
 import fr.paris.lutece.plugins.whatsnew.service.portlet.WhatsNewPortletService;
 import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
+import jakarta.enterprise.inject.spi.CDI;
 
 
 /**
@@ -51,7 +52,7 @@ public class WhatsNewPlugin extends PluginDefaultImplementation
      */
     public void init(  )
     {
-        WhatsNewService.getInstance(  ).init(  );
-        WhatsNewPortletService.getInstance(  ).init(  );
+        CDI.current( ).select( WhatsNewService.class ).get( ).init(  );
+        CDI.current( ).select( WhatsNewPortletService.class ).get( ).init(  );
     }
 }

@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset whatsnew:init_core_whatsnew_data_sample.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 --
 -- Dumping data for table whatsnew_portlet
 --

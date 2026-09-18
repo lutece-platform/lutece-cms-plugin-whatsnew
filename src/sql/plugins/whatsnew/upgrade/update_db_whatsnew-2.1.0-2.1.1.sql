@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset whatsnew:update_db_whatsnew-2.1.0-2.1.1.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 --
 -- Table structure for table whatsnew_portlet_whatsnew
 --

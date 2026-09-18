@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.whatsnew.web;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.whatsnew.business.WhatsNew;
 import fr.paris.lutece.plugins.whatsnew.service.WhatsNewPlugin;
 import fr.paris.lutece.plugins.whatsnew.service.WhatsNewResourceIdService;
@@ -47,10 +48,13 @@ import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -58,10 +62,18 @@ import javax.servlet.http.HttpServletRequest;
  * WhatsNewJspBean
  *
  */
+@RequestScoped
+@Named
 public class WhatsNewJspBean extends PluginAdminPageJspBean
 {
+    private static final long serialVersionUID = 1L;
+
     // JSP
     private static final String JSP_ADMIN_HOME = "jsp/admin/AdminMenu.jsp";
+    private static final String MESSAGE_UNAUTHORIZED = "User not authorized to manage the advanced parameters";
+
+    @Inject
+    private WhatsNewParameterService _parameterService;
 
     /**
      * Modify whatsnew parameter default values
@@ -73,14 +85,14 @@ public class WhatsNewJspBean extends PluginAdminPageJspBean
         throws AccessDeniedException
     {
         if ( !RBACService.isAuthorized( WhatsNew.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, getUser(  ) ) )
+                    WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, (User) getUser(  ) ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( MESSAGE_UNAUTHORIZED );
         }
 
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
 
-        ReferenceList listParams = WhatsNewParameterService.getInstance(  ).getParamDefaultValues( plugin );
+        ReferenceList listParams = _parameterService.getParamDefaultValues( plugin );
 
         for ( ReferenceItem param : listParams )
         {
@@ -92,7 +104,7 @@ public class WhatsNewJspBean extends PluginAdminPageJspBean
             }
 
             param.setName( strParamValue );
-            WhatsNewParameterService.getInstance(  ).update( param, plugin );
+            _parameterService.update( param, plugin );
         }
 
         return AppPathService.getBaseUrl( request ) + JSP_ADMIN_HOME;

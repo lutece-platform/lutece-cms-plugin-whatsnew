@@ -38,7 +38,7 @@ import fr.paris.lutece.portal.business.portlet.IPortletInterfaceDAO;
 import fr.paris.lutece.portal.business.portlet.PortletHome;
 import fr.paris.lutece.portal.business.portlet.PortletTypeHome;
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.util.List;
 
@@ -51,8 +51,7 @@ import java.util.List;
 public class WhatsNewPortletHome extends PortletHome
 {
     // Static variable pointed at the DAO instance
-    private static IWhatsNewPortletDAO _dao = (IWhatsNewPortletDAO) SpringContextService.getPluginBean( "whatsnew",
-            "whatsnew.whatsNewPortletDAO" );
+    private static IWhatsNewPortletDAO _dao = CDI.current( ).select( IWhatsNewPortletDAO.class ).get( );
 
     /** This class implements the Singleton design pattern. */
     private static WhatsNewPortletHome _singleton;

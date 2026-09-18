@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.whatsnew.business;
 
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.portal.web.constants.Parameters;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 import java.util.Locale;
 
@@ -44,6 +46,8 @@ import java.util.Locale;
  * WhatsNewTypePortlet
  *
  */
+@ApplicationScoped
+@Named( "whatsnew.whatsNewTypePortlet" )
 public class WhatsNewTypePortlet extends WhatsNew
 {
     private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/portlet/moderated_portlet.html";

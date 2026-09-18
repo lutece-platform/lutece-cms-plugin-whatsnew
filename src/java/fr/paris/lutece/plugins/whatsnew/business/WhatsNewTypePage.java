@@ -35,6 +35,8 @@ package fr.paris.lutece.plugins.whatsnew.business;
 
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.portal.web.constants.Parameters;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 import java.util.Locale;
 
@@ -44,6 +46,8 @@ import java.util.Locale;
  * WhatsNewTypePage
  *
  */
+@ApplicationScoped
+@Named( "whatsnew.whatsNewTypePage" )
 public class WhatsNewTypePage extends WhatsNew
 {
     private static final String TEMPLATE_MODERATED_ELEMENTS_LIST = "/admin/plugins/whatsnew/page/moderated_page.html";

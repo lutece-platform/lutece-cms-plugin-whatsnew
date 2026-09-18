@@ -33,6 +33,7 @@
  */
 package fr.paris.lutece.plugins.whatsnew.web;
 
+import fr.paris.lutece.api.user.User;
 import fr.paris.lutece.plugins.whatsnew.business.ElementOrderEnum;
 import fr.paris.lutece.plugins.whatsnew.business.WhatsNew;
 import fr.paris.lutece.plugins.whatsnew.service.WhatsNewPlugin;
@@ -48,13 +49,14 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.html.HtmlTemplate;
+import jakarta.enterprise.inject.spi.CDI;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -76,13 +78,13 @@ public class WhatsNewAdminDashboardComponent extends AdminDashboardComponent
         String strHtml = StringUtils.EMPTY;
 
         if ( RBACService.isAuthorized( WhatsNew.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, user ) )
+                    WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, (User) user ) )
         {
             Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
             Map<String, Object> model = new HashMap<String, Object>(  );
-            model.put( WhatsNewConstants.MARK_COMBO_PERIOD, WhatsNewService.getInstance(  ).getComboDays(  ) );
+            model.put( WhatsNewConstants.MARK_COMBO_PERIOD, CDI.current( ).select( WhatsNewService.class ).get( ).getComboDays(  ) );
             model.put( WhatsNewConstants.MARK_LIST_PARAM_DEFAULT_VALUES,
-                WhatsNewParameterService.getInstance(  ).getParamDefaultValues( plugin ) );
+                CDI.current( ).select( WhatsNewParameterService.class ).get( ).getParamDefaultValues( plugin ) );
             model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DATE, ElementOrderEnum.DATE.getId(  ) );
             model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ALPHA, ElementOrderEnum.ALPHA.getId(  ) );
             model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ASC, WhatsNewConstants.DISPLAY_ASC );

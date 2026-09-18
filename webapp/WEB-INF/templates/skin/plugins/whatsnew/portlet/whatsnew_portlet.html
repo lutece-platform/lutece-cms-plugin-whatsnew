@@ -1,0 +1,31 @@
+<div class="portlet append-bottom -lutece-border-radius" id="portlet_id_${portlet.id}">
+	<#if portlet.displayPortletTitle != 1>
+		<h3 class="portlet-header">${portlet.name}</h3>
+		<br />
+	</#if>
+	<div class="portlet-content">
+		<#if total == 0>
+			<i>#i18n{whatsnew.portlet.noElement}</i>
+		<#else>
+			<ul>
+				<#list elements as element>
+					<li>
+						<b><a href="${site_path}${element.url}" target="_top">${element.title}</a></b><br />
+						<i>${element.type}</i><br />
+						<#if element.description?has_content>${element.description}<br /></#if>
+						${element.date_update}<br /><br />
+					</li>
+				</#list>
+			</ul>
+			<div class="text-end">
+				<#if min_display gt 1>
+					<a href="${site_path}?page_id=${portlet.pageId}&amp;${min_display_parameter}=${previous_min}#portlet_id_${portlet.id}" target="_top">#i18n{whatsnew.portlet.previous}</a>
+				</#if>
+				<#if min_display == max_display>[${min_display} / ${total}]<#else>[${min_display}-${max_display} / ${total}]</#if>
+				<#if max_display lt total>
+					<a href="${site_path}?page_id=${portlet.pageId}&amp;${min_display_parameter}=${next_min}#portlet_id_${portlet.id}" target="_top">#i18n{whatsnew.portlet.next}</a>
+				</#if>
+			</div>
+		</#if>
+	</div>
+</div>

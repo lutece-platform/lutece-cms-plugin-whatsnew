@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset whatsnew:init_db_whatsnew.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 --
 -- Init table whatsnew_whatsnew_parameter
 --

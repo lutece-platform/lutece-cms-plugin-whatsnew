@@ -36,7 +36,7 @@ package fr.paris.lutece.plugins.whatsnew.business;
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
+import jakarta.enterprise.inject.spi.CDI;
 
 import java.sql.Timestamp;
 
@@ -53,8 +53,7 @@ import java.util.Locale;
 public final class WhatsNewHome
 {
     // Static variable pointed at the DAO instance
-    private static IWhatsNewDAO _dao = (IWhatsNewDAO) SpringContextService.getPluginBean( "whatsnew",
-            "whatsnew.whatsNewDAO" );
+    private static IWhatsNewDAO _dao = CDI.current( ).select( IWhatsNewDAO.class ).get( );
 
     /** Constructor */
     private WhatsNewHome(  )

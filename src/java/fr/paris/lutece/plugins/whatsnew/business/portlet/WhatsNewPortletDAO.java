@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.whatsnew.business.PortletDocumentLink;
 import fr.paris.lutece.portal.business.portlet.Portlet;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.sql.DAOUtil;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +48,7 @@ import java.util.List;
  * WhatsNewPortletDAO
  *
  */
+@ApplicationScoped
 public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
 {
     // Whatsnew queries
