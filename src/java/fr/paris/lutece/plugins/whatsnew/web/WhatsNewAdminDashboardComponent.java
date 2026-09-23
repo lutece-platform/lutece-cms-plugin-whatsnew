@@ -47,6 +47,8 @@ import fr.paris.lutece.portal.service.dashboard.admin.AdminDashboardComponent;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
+import fr.paris.lutece.portal.service.security.ISecurityTokenService;
+import fr.paris.lutece.portal.service.security.SecurityTokenHandler;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 import jakarta.enterprise.inject.spi.CDI;
@@ -80,15 +82,7 @@ public class WhatsNewAdminDashboardComponent extends AdminDashboardComponent
         if ( RBACService.isAuthorized( WhatsNew.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
                     WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, (User) user ) )
         {
-            Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
-            Map<String, Object> model = new HashMap<String, Object>(  );
-            model.put( WhatsNewConstants.MARK_COMBO_PERIOD, CDI.current( ).select( WhatsNewService.class ).get( ).getComboDays(  ) );
-            model.put( WhatsNewConstants.MARK_LIST_PARAM_DEFAULT_VALUES,
-                CDI.current( ).select( WhatsNewParameterService.class ).get( ).getParamDefaultValues( plugin ) );
-            model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DATE, ElementOrderEnum.DATE.getId(  ) );
-            model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ALPHA, ElementOrderEnum.ALPHA.getId(  ) );
-            model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ASC, WhatsNewConstants.DISPLAY_ASC );
-            model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DESC, WhatsNewConstants.DISPLAY_DESC );
+            Map<String, Object> model = getAdvancedParametersModel( request );
 
             HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_ADMIN_DASHBOARD, user.getLocale(  ), model );
 
@@ -96,5 +90,27 @@ public class WhatsNewAdminDashboardComponent extends AdminDashboardComponent
         }
 
         return strHtml;
+    }
+
+    /**
+     * Builds the model of the advanced parameters form
+     * @param request the request
+     * @return the model
+     */
+    static Map<String, Object> getAdvancedParametersModel( HttpServletRequest request )
+    {
+        Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
+        Map<String, Object> model = new HashMap<String, Object>(  );
+        model.put( WhatsNewConstants.MARK_COMBO_PERIOD, CDI.current( ).select( WhatsNewService.class ).get( ).getComboDays(  ) );
+        model.put( WhatsNewConstants.MARK_LIST_PARAM_DEFAULT_VALUES,
+            CDI.current( ).select( WhatsNewParameterService.class ).get( ).getParamDefaultValues( plugin ) );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DATE, ElementOrderEnum.DATE.getId(  ) );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ALPHA, ElementOrderEnum.ALPHA.getId(  ) );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_ASC, WhatsNewConstants.DISPLAY_ASC );
+        model.put( WhatsNewConstants.MARK_DISPLAY_ORDER_DESC, WhatsNewConstants.DISPLAY_DESC );
+        model.put( SecurityTokenHandler.MARK_CSRF_TOKEN, CDI.current( ).select( ISecurityTokenService.class ).get( )
+            .getToken( request, WhatsNewJspBean.ACTION_MODIFY_PARAMETER_DEFAULT_VALUES ) );
+
+        return model;
     }
 }

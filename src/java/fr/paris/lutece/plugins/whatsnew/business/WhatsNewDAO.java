@@ -86,29 +86,29 @@ public class WhatsNewDAO implements IWhatsNewDAO
      */
     public Collection<IWhatsNew> selectPagesByCriterias( Timestamp dateLimit, Locale locale )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PAGES_BY_CRITERIAS );
-        int nIndex = 1;
-        Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( nIndex++, dateLimit );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.executeQuery(  );
-
         List<IWhatsNew> list = new ArrayList<IWhatsNew>(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PAGES_BY_CRITERIAS ) )
         {
-            nIndex = 1;
+            int nIndex = 1;
+            Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
+            daoUtil.setTimestamp( nIndex++, dateLimit );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.executeQuery(  );
 
-            IWhatsNew whatsNew = new WhatsNewTypePage(  );
-            whatsNew.setWhatsNewType( locale );
-            whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
-            whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
-            whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
-            whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
-            list.add( whatsNew );
+            while ( daoUtil.next(  ) )
+            {
+                nIndex = 1;
+
+                IWhatsNew whatsNew = new WhatsNewTypePage(  );
+                whatsNew.setWhatsNewType( locale );
+                whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+                whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+                whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+                whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
+                list.add( whatsNew );
+            }
         }
-
-        daoUtil.free(  );
 
         return list;
     }
@@ -118,34 +118,34 @@ public class WhatsNewDAO implements IWhatsNewDAO
      */
     public Collection<IWhatsNew> selectPortletsByCriterias( Timestamp dateLimit, Locale locale )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PORTLETS_BY_CRITERIAS );
-        int nIndex = 1;
-        Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( nIndex++, dateLimit );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.executeQuery(  );
-
         List<IWhatsNew> list = new ArrayList<IWhatsNew>(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PORTLETS_BY_CRITERIAS ) )
         {
-            nIndex = 1;
+            int nIndex = 1;
+            Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
+            daoUtil.setTimestamp( nIndex++, dateLimit );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.executeQuery(  );
 
-            WhatsNewTypePortlet whatsNew = new WhatsNewTypePortlet(  );
-            whatsNew.setWhatsNewType( locale );
-            whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
-            whatsNew.setDescription( StringUtils.EMPTY );
-            whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
-            whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
-            whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+            while ( daoUtil.next(  ) )
+            {
+                nIndex = 1;
 
-            String strType = I18nService.getLocalizedString( daoUtil.getString( nIndex++ ), locale );
-            whatsNew.setType( strType );
-            whatsNew.setRefPageName( daoUtil.getString( nIndex++ ) );
-            list.add( whatsNew );
+                WhatsNewTypePortlet whatsNew = new WhatsNewTypePortlet(  );
+                whatsNew.setWhatsNewType( locale );
+                whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+                whatsNew.setDescription( StringUtils.EMPTY );
+                whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+                whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
+                whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+
+                String strType = I18nService.getLocalizedString( daoUtil.getString( nIndex++ ), locale );
+                whatsNew.setType( strType );
+                whatsNew.setRefPageName( daoUtil.getString( nIndex++ ) );
+                list.add( whatsNew );
+            }
         }
-
-        daoUtil.free(  );
 
         return list;
     }
@@ -155,33 +155,33 @@ public class WhatsNewDAO implements IWhatsNewDAO
      */
     public Collection<IWhatsNew> selectDocumentsByCriterias( Timestamp dateLimit, Plugin plugin, Locale locale )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS, plugin );
-        int nIndex = 1;
-        Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( nIndex++, dateLimit );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.executeQuery(  );
-
         List<IWhatsNew> list = new ArrayList<IWhatsNew>(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENTS_BY_CRITERIAS, plugin ) )
         {
-            nIndex = 1;
+            int nIndex = 1;
+            Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
+            daoUtil.setTimestamp( nIndex++, dateLimit );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.executeQuery(  );
 
-            IWhatsNew whatsNew = new WhatsNewTypeDocument(  );
-            whatsNew.setWhatsNewType( locale );
-            whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
-            whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
-            whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
-            whatsNew.setDocumentId( daoUtil.getInt( nIndex++ ) );
-            whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
-            whatsNew.setType( daoUtil.getString( nIndex++ ) );
-            list.add( whatsNew );
+            while ( daoUtil.next(  ) )
+            {
+                nIndex = 1;
+
+                IWhatsNew whatsNew = new WhatsNewTypeDocument(  );
+                whatsNew.setWhatsNewType( locale );
+                whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+                whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+                whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+                whatsNew.setDocumentId( daoUtil.getInt( nIndex++ ) );
+                whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+                whatsNew.setType( daoUtil.getString( nIndex++ ) );
+                list.add( whatsNew );
+            }
         }
-
-        daoUtil.free(  );
 
         return list;
     }
@@ -208,30 +208,30 @@ public class WhatsNewDAO implements IWhatsNewDAO
                 }
             }
 
-            DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) );
-            int nIndex = 1;
-
-            for ( Integer nPageId : listPageIds )
+            try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) ) )
             {
-                daoUtil.setInt( nIndex++, nPageId );
+                int nIndex = 1;
+
+                for ( Integer nPageId : listPageIds )
+                {
+                    daoUtil.setInt( nIndex++, nPageId );
+                }
+
+                daoUtil.executeQuery(  );
+
+                while ( daoUtil.next(  ) )
+                {
+                    nIndex = 1;
+
+                    IWhatsNew whatsNew = new WhatsNewTypePage(  );
+                    whatsNew.setWhatsNewType( locale );
+                    whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+                    whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+                    whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+                    whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
+                    listWhatsNews.add( whatsNew );
+                }
             }
-
-            daoUtil.executeQuery(  );
-
-            while ( daoUtil.next(  ) )
-            {
-                nIndex = 1;
-
-                IWhatsNew whatsNew = new WhatsNewTypePage(  );
-                whatsNew.setWhatsNewType( locale );
-                whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
-                whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
-                whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
-                whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
-                listWhatsNews.add( whatsNew );
-            }
-
-            daoUtil.free(  );
         }
 
         return listWhatsNews;
@@ -259,35 +259,35 @@ public class WhatsNewDAO implements IWhatsNewDAO
                 }
             }
 
-            DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) );
-            int nIndex = 1;
-
-            for ( Integer nPortletId : listPortletIds )
+            try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) ) )
             {
-                daoUtil.setInt( nIndex++, nPortletId );
+                int nIndex = 1;
+
+                for ( Integer nPortletId : listPortletIds )
+                {
+                    daoUtil.setInt( nIndex++, nPortletId );
+                }
+
+                daoUtil.executeQuery(  );
+
+                while ( daoUtil.next(  ) )
+                {
+                    nIndex = 1;
+
+                    WhatsNewTypePortlet whatsNew = new WhatsNewTypePortlet(  );
+                    whatsNew.setWhatsNewType( locale );
+                    whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+                    whatsNew.setDescription( StringUtils.EMPTY );
+                    whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+                    whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
+                    whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+
+                    String strType = I18nService.getLocalizedString( daoUtil.getString( nIndex++ ), locale );
+                    whatsNew.setType( strType );
+                    whatsNew.setRefPageName( daoUtil.getString( nIndex++ ) );
+                    listWhatsNews.add( whatsNew );
+                }
             }
-
-            daoUtil.executeQuery(  );
-
-            while ( daoUtil.next(  ) )
-            {
-                nIndex = 1;
-
-                WhatsNewTypePortlet whatsNew = new WhatsNewTypePortlet(  );
-                whatsNew.setWhatsNewType( locale );
-                whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
-                whatsNew.setDescription( StringUtils.EMPTY );
-                whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
-                whatsNew.setPageId( daoUtil.getInt( nIndex++ ) );
-                whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
-
-                String strType = I18nService.getLocalizedString( daoUtil.getString( nIndex++ ), locale );
-                whatsNew.setType( strType );
-                whatsNew.setRefPageName( daoUtil.getString( nIndex++ ) );
-                listWhatsNews.add( whatsNew );
-            }
-
-            daoUtil.free(  );
         }
 
         return listWhatsNews;
@@ -315,33 +315,33 @@ public class WhatsNewDAO implements IWhatsNewDAO
                 }
             }
 
-            DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) );
-            int nIndex = 1;
-
-            for ( PortletDocumentLink pdLink : listPortletDocumentLinks )
+            try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) ) )
             {
-                daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
-                daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
+                int nIndex = 1;
+
+                for ( PortletDocumentLink pdLink : listPortletDocumentLinks )
+                {
+                    daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
+                    daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
+                }
+
+                daoUtil.executeQuery(  );
+
+                while ( daoUtil.next(  ) )
+                {
+                    nIndex = 1;
+
+                    IWhatsNew whatsNew = new WhatsNewTypeDocument(  );
+                    whatsNew.setWhatsNewType( locale );
+                    whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
+                    whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
+                    whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
+                    whatsNew.setDocumentId( daoUtil.getInt( nIndex++ ) );
+                    whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
+                    whatsNew.setType( daoUtil.getString( nIndex++ ) );
+                    listWhatsNews.add( whatsNew );
+                }
             }
-
-            daoUtil.executeQuery(  );
-
-            while ( daoUtil.next(  ) )
-            {
-                nIndex = 1;
-
-                IWhatsNew whatsNew = new WhatsNewTypeDocument(  );
-                whatsNew.setWhatsNewType( locale );
-                whatsNew.setTitle( daoUtil.getString( nIndex++ ) );
-                whatsNew.setDescription( daoUtil.getString( nIndex++ ) );
-                whatsNew.setDateUpdate( daoUtil.getTimestamp( nIndex++ ) );
-                whatsNew.setDocumentId( daoUtil.getInt( nIndex++ ) );
-                whatsNew.setPortletId( daoUtil.getInt( nIndex++ ) );
-                whatsNew.setType( daoUtil.getString( nIndex++ ) );
-                listWhatsNews.add( whatsNew );
-            }
-
-            daoUtil.free(  );
         }
 
         return listWhatsNews;
@@ -358,20 +358,20 @@ public class WhatsNewDAO implements IWhatsNewDAO
         sbSQL.append( SQL_AND );
         sbSQL.append( SQL_WHERE_ID_PAGE );
 
-        DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) );
-        int nIndex = 1;
-        Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( nIndex++, dateLimit );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setInt( nIndex++, nPageId );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) ) )
         {
-            bIsOutOfDate = false;
-        }
+            int nIndex = 1;
+            Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
+            daoUtil.setTimestamp( nIndex++, dateLimit );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setInt( nIndex++, nPageId );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            if ( daoUtil.next(  ) )
+            {
+                bIsOutOfDate = false;
+            }
+        }
 
         return bIsOutOfDate;
     }
@@ -387,20 +387,20 @@ public class WhatsNewDAO implements IWhatsNewDAO
         sbSQL.append( SQL_AND );
         sbSQL.append( SQL_WHERE_ID_PORTLET );
 
-        DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) );
-        int nIndex = 1;
-        Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( nIndex++, dateLimit );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setInt( nIndex++, nPortletId );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ) ) )
         {
-            bIsOutOfDate = false;
-        }
+            int nIndex = 1;
+            Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
+            daoUtil.setTimestamp( nIndex++, dateLimit );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setInt( nIndex++, nPortletId );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            if ( daoUtil.next(  ) )
+            {
+                bIsOutOfDate = false;
+            }
+        }
 
         return bIsOutOfDate;
     }
@@ -417,23 +417,23 @@ public class WhatsNewDAO implements IWhatsNewDAO
         sbSQL.append( SQL_AND );
         sbSQL.append( SQL_WHERE_ID_PORTLET_ID_DOCUMENT );
 
-        DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ), plugin );
-        int nIndex = 1;
-        Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
-        daoUtil.setTimestamp( nIndex++, dateLimit );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setTimestamp( nIndex++, timestampCurrent );
-        daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
-        daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( sbSQL.toString(  ), plugin ) )
         {
-            bIsOutOfDate = false;
-        }
+            int nIndex = 1;
+            Timestamp timestampCurrent = new Timestamp( ( new Date(  ) ).getTime(  ) );
+            daoUtil.setTimestamp( nIndex++, dateLimit );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setTimestamp( nIndex++, timestampCurrent );
+            daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
+            daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            if ( daoUtil.next(  ) )
+            {
+                bIsOutOfDate = false;
+            }
+        }
 
         return bIsOutOfDate;
     }

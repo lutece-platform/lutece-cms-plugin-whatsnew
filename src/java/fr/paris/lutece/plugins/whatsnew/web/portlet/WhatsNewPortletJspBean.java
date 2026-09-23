@@ -37,6 +37,7 @@ import fr.paris.lutece.plugins.whatsnew.business.ElementOrderEnum;
 import fr.paris.lutece.plugins.whatsnew.business.IWhatsNew;
 import fr.paris.lutece.plugins.whatsnew.business.PortletDocumentLink;
 import fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortlet;
+import fr.paris.lutece.plugins.whatsnew.business.portlet.WhatsNewPortletHome;
 import fr.paris.lutece.plugins.whatsnew.service.WhatsNewPlugin;
 import fr.paris.lutece.plugins.whatsnew.service.WhatsNewService;
 import fr.paris.lutece.plugins.whatsnew.service.parameter.WhatsNewParameterService;
@@ -55,6 +56,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.sql.Timestamp;
 
@@ -119,6 +121,52 @@ public class WhatsNewPortletJspBean extends PortletJspBean
         HtmlTemplate template = getCreateTemplate( strPageId, strPortletTypeId, model );
 
         return template.getHtml(  );
+    }
+
+    /**
+     * Returns the url of the error message answered instead of the creation form
+     * @param request request
+     * @return the url of the error message, or null when the request names a page and this portlet type
+     */
+    public String getCreateErrorUrl( HttpServletRequest request )
+    {
+        String strPageId = request.getParameter( PARAMETER_PAGE_ID );
+
+        if ( StringUtils.isBlank( strPageId ) || !StringUtils.isNumeric( strPageId ) )
+        {
+            return AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_NOT_NUMERIC, AdminMessage.TYPE_ERROR );
+        }
+
+        if ( !_portletService.getPortletTypeId( ).equals( request.getParameter( PARAMETER_PORTLET_TYPE_ID ) ) )
+        {
+            return AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_OBJECT_NOT_FOUND, AdminMessage.TYPE_ERROR );
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the url of the error message answered instead of the modification form
+     * @param request request
+     * @return the url of the error message, or null when the request names an existing portlet of this type
+     */
+    public String getModifyErrorUrl( HttpServletRequest request )
+    {
+        String strPortletId = request.getParameter( PARAMETER_PORTLET_ID );
+
+        if ( StringUtils.isBlank( strPortletId ) || !StringUtils.isNumeric( strPortletId ) )
+        {
+            return AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_NOT_NUMERIC, AdminMessage.TYPE_ERROR );
+        }
+
+        int nPortletId = NumberUtils.toInt( strPortletId, 0 );
+
+        if ( WhatsNewPortletHome.getInstance( ).getDAO( ).load( nPortletId ).getId( ) != nPortletId )
+        {
+            return AdminMessageService.getMessageUrl( request, WhatsNewConstants.MESSAGE_OBJECT_NOT_FOUND, AdminMessage.TYPE_ERROR );
+        }
+
+        return null;
     }
 
     /**

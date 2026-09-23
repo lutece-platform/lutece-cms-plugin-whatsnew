@@ -61,19 +61,19 @@ public class WhatsNewParameterDAO implements IWhatsNewParameterDAO
     public ReferenceList selectAll( Plugin plugin )
     {
         ReferenceList listParams = new ReferenceList(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin );
-        daoUtil.executeQuery(  );
-
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL, plugin ) )
         {
-            ReferenceItem param = new ReferenceItem(  );
-            param.setCode( daoUtil.getString( 1 ) );
-            param.setName( daoUtil.getString( 2 ) );
-            param.setChecked( param.getName(  ).equals( TRUE ) ? true : false );
-            listParams.add( param );
-        }
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            while ( daoUtil.next(  ) )
+            {
+                ReferenceItem param = new ReferenceItem(  );
+                param.setCode( daoUtil.getString( 1 ) );
+                param.setName( daoUtil.getString( 2 ) );
+                param.setChecked( param.getName(  ).equals( TRUE ) ? true : false );
+                listParams.add( param );
+            }
+        }
 
         return listParams;
     }
@@ -87,18 +87,18 @@ public class WhatsNewParameterDAO implements IWhatsNewParameterDAO
     public ReferenceItem load( String strParameterKey, Plugin plugin )
     {
         ReferenceItem param = null;
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin );
-        daoUtil.setString( 1, strParameterKey );
-        daoUtil.executeQuery(  );
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT, plugin ) )
         {
-            param = new ReferenceItem(  );
-            param.setCode( strParameterKey );
-            param.setName( daoUtil.getString( 1 ) );
-        }
+            daoUtil.setString( 1, strParameterKey );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            if ( daoUtil.next(  ) )
+            {
+                param = new ReferenceItem(  );
+                param.setCode( strParameterKey );
+                param.setName( daoUtil.getString( 1 ) );
+            }
+        }
 
         return param;
     }
@@ -110,12 +110,12 @@ public class WhatsNewParameterDAO implements IWhatsNewParameterDAO
      */
     public void store( ReferenceItem param, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
+        {
+            daoUtil.setString( 1, param.getName(  ) );
+            daoUtil.setString( 2, param.getCode(  ) );
 
-        daoUtil.setString( 1, param.getName(  ) );
-        daoUtil.setString( 2, param.getCode(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 }

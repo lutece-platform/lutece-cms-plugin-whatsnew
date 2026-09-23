@@ -89,21 +89,22 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
     {
         WhatsNewPortlet p = (WhatsNewPortlet) portlet;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT );
-        int nIndex = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT ) )
+        {
+            int nIndex = 1;
 
-        daoUtil.setInt( nIndex++, p.getId(  ) );
-        daoUtil.setBoolean( nIndex++, p.getShowDocuments(  ) );
-        daoUtil.setBoolean( nIndex++, p.getShowPortlets(  ) );
-        daoUtil.setBoolean( nIndex++, p.getShowPages(  ) );
-        daoUtil.setInt( nIndex++, p.getPeriod(  ) );
-        daoUtil.setInt( nIndex++, p.getNbElementsMax(  ) );
-        daoUtil.setInt( nIndex++, p.getElementsOrder(  ) );
-        daoUtil.setBoolean( nIndex++, p.getAscSort(  ) );
-        daoUtil.setBoolean( nIndex++, p.getDynamic(  ) );
+            daoUtil.setInt( nIndex++, p.getId(  ) );
+            daoUtil.setBoolean( nIndex++, p.getShowDocuments(  ) );
+            daoUtil.setBoolean( nIndex++, p.getShowPortlets(  ) );
+            daoUtil.setBoolean( nIndex++, p.getShowPages(  ) );
+            daoUtil.setInt( nIndex++, p.getPeriod(  ) );
+            daoUtil.setInt( nIndex++, p.getNbElementsMax(  ) );
+            daoUtil.setInt( nIndex++, p.getElementsOrder(  ) );
+            daoUtil.setBoolean( nIndex++, p.getAscSort(  ) );
+            daoUtil.setBoolean( nIndex++, p.getDynamic(  ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -111,11 +112,12 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void delete( int nPortletId )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE );
-        daoUtil.setInt( 1, nPortletId );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE ) )
+        {
+            daoUtil.setInt( 1, nPortletId );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -123,28 +125,28 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public Portlet load( int nPortletId )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT );
-        daoUtil.setInt( 1, nPortletId );
-        daoUtil.executeQuery(  );
-
         WhatsNewPortlet portlet = new WhatsNewPortlet(  );
 
-        int nIndex = 1;
-
-        if ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT ) )
         {
-            portlet.setId( daoUtil.getInt( nIndex++ ) );
-            portlet.setShowDocuments( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setShowPortlets( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setShowPages( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setPeriod( daoUtil.getInt( nIndex++ ) );
-            portlet.setNbElementsMax( daoUtil.getInt( nIndex++ ) );
-            portlet.setElementsOrder( daoUtil.getInt( nIndex++ ) );
-            portlet.setAscSort( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setDynamic( daoUtil.getBoolean( nIndex++ ) );
-        }
+            daoUtil.setInt( 1, nPortletId );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            int nIndex = 1;
+
+            if ( daoUtil.next(  ) )
+            {
+                portlet.setId( daoUtil.getInt( nIndex++ ) );
+                portlet.setShowDocuments( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setShowPortlets( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setShowPages( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setPeriod( daoUtil.getInt( nIndex++ ) );
+                portlet.setNbElementsMax( daoUtil.getInt( nIndex++ ) );
+                portlet.setElementsOrder( daoUtil.getInt( nIndex++ ) );
+                portlet.setAscSort( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setDynamic( daoUtil.getBoolean( nIndex++ ) );
+            }
+        }
 
         return portlet;
     }
@@ -156,22 +158,23 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
     {
         WhatsNewPortlet p = (WhatsNewPortlet) portlet;
 
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE );
-        int nIndex = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE ) )
+        {
+            int nIndex = 1;
 
-        daoUtil.setBoolean( nIndex++, p.getShowDocuments(  ) );
-        daoUtil.setBoolean( nIndex++, p.getShowPortlets(  ) );
-        daoUtil.setBoolean( nIndex++, p.getShowPages(  ) );
-        daoUtil.setInt( nIndex++, p.getPeriod(  ) );
-        daoUtil.setInt( nIndex++, p.getNbElementsMax(  ) );
-        daoUtil.setInt( nIndex++, p.getElementsOrder(  ) );
-        daoUtil.setBoolean( nIndex++, p.getAscSort(  ) );
-        daoUtil.setBoolean( nIndex++, p.getDynamic(  ) );
+            daoUtil.setBoolean( nIndex++, p.getShowDocuments(  ) );
+            daoUtil.setBoolean( nIndex++, p.getShowPortlets(  ) );
+            daoUtil.setBoolean( nIndex++, p.getShowPages(  ) );
+            daoUtil.setInt( nIndex++, p.getPeriod(  ) );
+            daoUtil.setInt( nIndex++, p.getNbElementsMax(  ) );
+            daoUtil.setInt( nIndex++, p.getElementsOrder(  ) );
+            daoUtil.setBoolean( nIndex++, p.getAscSort(  ) );
+            daoUtil.setBoolean( nIndex++, p.getDynamic(  ) );
 
-        daoUtil.setInt( nIndex++, p.getId(  ) );
+            daoUtil.setInt( nIndex++, p.getId(  ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -180,26 +183,27 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
     public List<WhatsNewPortlet> findAll(  )
     {
         List<WhatsNewPortlet> listPortlets = new ArrayList<WhatsNewPortlet>(  );
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL );
-        daoUtil.executeQuery(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_ALL ) )
         {
-            int nIndex = 1;
-            WhatsNewPortlet portlet = new WhatsNewPortlet(  );
-            portlet.setId( daoUtil.getInt( nIndex++ ) );
-            portlet.setShowDocuments( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setShowPortlets( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setShowPages( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setPeriod( daoUtil.getInt( nIndex++ ) );
-            portlet.setNbElementsMax( daoUtil.getInt( nIndex++ ) );
-            portlet.setElementsOrder( daoUtil.getInt( nIndex++ ) );
-            portlet.setAscSort( daoUtil.getBoolean( nIndex++ ) );
-            portlet.setDynamic( daoUtil.getBoolean( nIndex++ ) );
-            listPortlets.add( portlet );
-        }
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            while ( daoUtil.next(  ) )
+            {
+                int nIndex = 1;
+                WhatsNewPortlet portlet = new WhatsNewPortlet(  );
+                portlet.setId( daoUtil.getInt( nIndex++ ) );
+                portlet.setShowDocuments( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setShowPortlets( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setShowPages( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setPeriod( daoUtil.getInt( nIndex++ ) );
+                portlet.setNbElementsMax( daoUtil.getInt( nIndex++ ) );
+                portlet.setElementsOrder( daoUtil.getInt( nIndex++ ) );
+                portlet.setAscSort( daoUtil.getBoolean( nIndex++ ) );
+                portlet.setDynamic( daoUtil.getBoolean( nIndex++ ) );
+                listPortlets.add( portlet );
+            }
+        }
 
         return listPortlets;
     }
@@ -211,18 +215,18 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public List<Integer> loadPageIdsFromWhatsNewPortletId( int nWhatsNewPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PAGE_WHATSNEW, plugin );
-        daoUtil.setInt( 1, nWhatsNewPortletId );
-        daoUtil.executeQuery(  );
-
         List<Integer> listPageIds = new ArrayList<Integer>(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PAGE_WHATSNEW, plugin ) )
         {
-            listPageIds.add( daoUtil.getInt( 1 ) );
-        }
+            daoUtil.setInt( 1, nWhatsNewPortletId );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            while ( daoUtil.next(  ) )
+            {
+                listPageIds.add( daoUtil.getInt( 1 ) );
+            }
+        }
 
         return listPageIds;
     }
@@ -232,14 +236,15 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void insertPageForWhatsNew( int nWhatsNewPortletId, int nPageId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_PAGE_WHATSNEW, plugin );
-        int nIndex = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_PAGE_WHATSNEW, plugin ) )
+        {
+            int nIndex = 1;
 
-        daoUtil.setInt( nIndex++, nWhatsNewPortletId );
-        daoUtil.setInt( nIndex++, nPageId );
+            daoUtil.setInt( nIndex++, nWhatsNewPortletId );
+            daoUtil.setInt( nIndex++, nPageId );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -247,12 +252,12 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deletePagesFromWhatsNew( int nWhatsNewPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PAGE_WHATSNEW_FROM_ID_WHATSNEW_PORTLET, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PAGE_WHATSNEW_FROM_ID_WHATSNEW_PORTLET, plugin ) )
+        {
+            daoUtil.setInt( 1, nWhatsNewPortletId );
 
-        daoUtil.setInt( 1, nWhatsNewPortletId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -260,12 +265,12 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteWhatsNewFromPage( int nPageId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PAGE_WHATSNEW_FROM_ID_PAGE, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PAGE_WHATSNEW_FROM_ID_PAGE, plugin ) )
+        {
+            daoUtil.setInt( 1, nPageId );
 
-        daoUtil.setInt( 1, nPageId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -273,14 +278,14 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteLinkWhatsNewPortletToPage( int nWhatsNewPortletId, int nPageId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_WHATSNEW_PORTLET_TO_PAGE, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_WHATSNEW_PORTLET_TO_PAGE, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, nWhatsNewPortletId );
+            daoUtil.setInt( nIndex++, nPageId );
 
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, nWhatsNewPortletId );
-        daoUtil.setInt( nIndex++, nPageId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     // WHATSNEW_PORTLET_WHATSNEW
@@ -290,18 +295,18 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public List<Integer> loadPortletIdsFromWhatsNewPortletId( int nWhatsNewPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PORTLET_WHATSNEW, plugin );
-        daoUtil.setInt( 1, nWhatsNewPortletId );
-        daoUtil.executeQuery(  );
-
         List<Integer> listPortletIds = new ArrayList<Integer>(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_PORTLET_WHATSNEW, plugin ) )
         {
-            listPortletIds.add( daoUtil.getInt( 1 ) );
-        }
+            daoUtil.setInt( 1, nWhatsNewPortletId );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            while ( daoUtil.next(  ) )
+            {
+                listPortletIds.add( daoUtil.getInt( 1 ) );
+            }
+        }
 
         return listPortletIds;
     }
@@ -311,14 +316,15 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void insertPortletForWhatsNew( int nWhatsNewPortletId, int nPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_PORTLET_WHATSNEW, plugin );
-        int nIndex = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_PORTLET_WHATSNEW, plugin ) )
+        {
+            int nIndex = 1;
 
-        daoUtil.setInt( nIndex++, nWhatsNewPortletId );
-        daoUtil.setInt( nIndex++, nPortletId );
+            daoUtil.setInt( nIndex++, nWhatsNewPortletId );
+            daoUtil.setInt( nIndex++, nPortletId );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -326,12 +332,12 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deletePortletsFromWhatsNew( int nWhatsNewPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PORTLET_WHATSNEW_FROM_ID_WHATSNEW_PORTLET, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PORTLET_WHATSNEW_FROM_ID_WHATSNEW_PORTLET, plugin ) )
+        {
+            daoUtil.setInt( 1, nWhatsNewPortletId );
 
-        daoUtil.setInt( 1, nWhatsNewPortletId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -339,12 +345,12 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteWhatsNewFromPortlet( int nPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PORTLET_WHATSNEW_FROM_ID_PORTLET, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_PORTLET_WHATSNEW_FROM_ID_PORTLET, plugin ) )
+        {
+            daoUtil.setInt( 1, nPortletId );
 
-        daoUtil.setInt( 1, nPortletId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -352,14 +358,14 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteLinkWhatsNewPortletToPortlet( int nWhatsNewPortletId, int nPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_WHATSNEW_PORTLET_TO_PORTLET, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_WHATSNEW_PORTLET_TO_PORTLET, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, nWhatsNewPortletId );
+            daoUtil.setInt( nIndex++, nPortletId );
 
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, nWhatsNewPortletId );
-        daoUtil.setInt( nIndex++, nPortletId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     // WHATSNEW_DOCUMENT_WHATSNEW
@@ -369,22 +375,22 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public List<PortletDocumentLink> loadDocumentFromWhatsNewPortletId( int nWhatsNewPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENT_WHATSNEW, plugin );
-        daoUtil.setInt( 1, nWhatsNewPortletId );
-        daoUtil.executeQuery(  );
-
         List<PortletDocumentLink> listPortletDocumentLink = new ArrayList<PortletDocumentLink>(  );
 
-        while ( daoUtil.next(  ) )
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_DOCUMENT_WHATSNEW, plugin ) )
         {
-            int nIndex = 1;
-            int nPortletId = daoUtil.getInt( nIndex++ );
-            int nDocumentId = daoUtil.getInt( nIndex++ );
-            PortletDocumentLink pdLink = new PortletDocumentLink( nPortletId, nDocumentId );
-            listPortletDocumentLink.add( pdLink );
-        }
+            daoUtil.setInt( 1, nWhatsNewPortletId );
+            daoUtil.executeQuery(  );
 
-        daoUtil.free(  );
+            while ( daoUtil.next(  ) )
+            {
+                int nIndex = 1;
+                int nPortletId = daoUtil.getInt( nIndex++ );
+                int nDocumentId = daoUtil.getInt( nIndex++ );
+                PortletDocumentLink pdLink = new PortletDocumentLink( nPortletId, nDocumentId );
+                listPortletDocumentLink.add( pdLink );
+            }
+        }
 
         return listPortletDocumentLink;
     }
@@ -394,15 +400,16 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void insertDocumentForWhatsNew( int nWhatsNewPortletId, PortletDocumentLink pdLink, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_DOCUMENT_WHATSNEW, plugin );
-        int nIndex = 1;
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_DOCUMENT_WHATSNEW, plugin ) )
+        {
+            int nIndex = 1;
 
-        daoUtil.setInt( nIndex++, nWhatsNewPortletId );
-        daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
-        daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
+            daoUtil.setInt( nIndex++, nWhatsNewPortletId );
+            daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
+            daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
 
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -410,12 +417,12 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteDocumentsFromWhatsNew( int nWhatsNewPortletId, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_DOCUMENT_WHATSNEW_FROM_ID_WHATSNEW_PORTLET, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_DOCUMENT_WHATSNEW_FROM_ID_WHATSNEW_PORTLET, plugin ) )
+        {
+            daoUtil.setInt( 1, nWhatsNewPortletId );
 
-        daoUtil.setInt( 1, nWhatsNewPortletId );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -423,14 +430,14 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteWhatsNewFromDocument( PortletDocumentLink pdLink, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_DOCUMENT_WHATSNEW_FROM_ID_DOCUMENT_ID_PORTLET, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_DOCUMENT_WHATSNEW_FROM_ID_DOCUMENT_ID_PORTLET, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
+            daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
 
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
-        daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 
     /**
@@ -438,14 +445,14 @@ public final class WhatsNewPortletDAO implements IWhatsNewPortletDAO
      */
     public void deleteLinkWhatsNewPortletToDocument( int nWhatsNewPortletId, PortletDocumentLink pdLink, Plugin plugin )
     {
-        DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_WHATSNEW_PORTLET_TO_DOCUMENT, plugin );
+        try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_LINK_WHATSNEW_PORTLET_TO_DOCUMENT, plugin ) )
+        {
+            int nIndex = 1;
+            daoUtil.setInt( nIndex++, nWhatsNewPortletId );
+            daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
+            daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
 
-        int nIndex = 1;
-        daoUtil.setInt( nIndex++, nWhatsNewPortletId );
-        daoUtil.setInt( nIndex++, pdLink.getPortletId(  ) );
-        daoUtil.setInt( nIndex++, pdLink.getDocumentId(  ) );
-
-        daoUtil.executeUpdate(  );
-        daoUtil.free(  );
+            daoUtil.executeUpdate(  );
+        }
     }
 }
