@@ -41,11 +41,16 @@ import fr.paris.lutece.plugins.whatsnew.service.parameter.WhatsNewParameterServi
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.portal.business.rbac.RBAC;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
+import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.rbac.RBACService;
-import fr.paris.lutece.portal.service.util.AppPathService;
-import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
+import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
+import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 import jakarta.enterprise.context.RequestScoped;
@@ -53,6 +58,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -64,30 +70,57 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 @RequestScoped
 @Named
-public class WhatsNewJspBean extends PluginAdminPageJspBean
+@Controller( controllerJsp = WhatsNewJspBean.CONTROLLER_JSP, controllerPath = WhatsNewJspBean.CONTROLLER_PATH, right = WhatsNewJspBean.RIGHT_MANAGE_ADMIN_SITE, securityTokenEnabled = true )
+public class WhatsNewJspBean extends MVCAdminJspBean
 {
+    public static final String CONTROLLER_JSP = "ManageAdvancedParameters.jsp";
+    public static final String CONTROLLER_PATH = "jsp/admin/plugins/whatsnew/";
+    public static final String RIGHT_MANAGE_ADMIN_SITE = "CORE_ADMIN_SITE";
+    public static final String ACTION_MODIFY_PARAMETER_DEFAULT_VALUES = "modifyWhatsNewParameterDefaultValues";
+
     private static final long serialVersionUID = 1L;
 
-    // JSP
-    private static final String JSP_ADMIN_HOME = "jsp/admin/AdminMenu.jsp";
+    private static final String VIEW_MANAGE_ADVANCED_PARAMETERS = "manageAdvancedParameters";
+    private static final String TEMPLATE_MANAGE_ADVANCED_PARAMETERS = "admin/plugins/whatsnew/manage_advanced_parameters.html";
+    private static final String PROPERTY_PAGE_TITLE = "whatsnew.manage_advanced_parameters.pageTitle";
+    private static final String MESSAGE_PARAMETERS_SAVED = "whatsnew.manage_advanced_parameters.messageSaved";
     private static final String MESSAGE_UNAUTHORIZED = "User not authorized to manage the advanced parameters";
 
     @Inject
     private WhatsNewParameterService _parameterService;
 
     /**
+     * Displays the advanced parameters form
+     * @param request HttpServletRequest
+     * @param model the model
+     * @return the page
+     * @throws AccessDeniedException when the user does not have the permission
+     */
+    @View( value = VIEW_MANAGE_ADVANCED_PARAMETERS, defaultView = true )
+    public String getManageAdvancedParameters( HttpServletRequest request, Models model ) throws AccessDeniedException
+    {
+        checkPermission( );
+        WhatsNewAdminDashboardComponent.getAdvancedParametersModel( request ).forEach( model::put );
+
+        return getPage( PROPERTY_PAGE_TITLE, TEMPLATE_MANAGE_ADVANCED_PARAMETERS, model );
+    }
+
+    /**
      * Modify whatsnew parameter default values
      * @param request HttpServletRequest
-     * @return JSP return
-     * @throws AccessDeniedException access denied if the user does not have the permission
+     * @return the redirection
+     * @throws AccessDeniedException when the user does not have the permission
      */
-    public String doModifyWhatsNewParameterDefaultValues( HttpServletRequest request )
-        throws AccessDeniedException
+    @Action( ACTION_MODIFY_PARAMETER_DEFAULT_VALUES )
+    public String doModifyWhatsNewParameterDefaultValues( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !RBACService.isAuthorized( WhatsNew.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
-                    WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, (User) getUser(  ) ) )
+        checkPermission( );
+
+        String strError = getNbElementsMaxError( request.getParameter( WhatsNewConstants.PARAMETER_NB_ELEMENTS_MAX ) );
+
+        if ( strError != null )
         {
-            throw new AccessDeniedException( MESSAGE_UNAUTHORIZED );
+            return redirect( request, AdminMessageService.getMessageUrl( request, strError, AdminMessage.TYPE_STOP ) );
         }
 
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
@@ -107,6 +140,46 @@ public class WhatsNewJspBean extends PluginAdminPageJspBean
             _parameterService.update( param, plugin );
         }
 
-        return AppPathService.getBaseUrl( request ) + JSP_ADMIN_HOME;
+        addInfo( MESSAGE_PARAMETERS_SAVED, getLocale( ) );
+
+        return redirectView( request, VIEW_MANAGE_ADVANCED_PARAMETERS );
+    }
+
+    /**
+     * Checks that the user may manage the advanced parameters
+     * @throws AccessDeniedException when the user does not have the permission
+     */
+    private void checkPermission( ) throws AccessDeniedException
+    {
+        if ( !RBACService.isAuthorized( WhatsNew.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
+                    WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, (User) getUser(  ) ) )
+        {
+            throw new AccessDeniedException( MESSAGE_UNAUTHORIZED );
+        }
+    }
+
+    /**
+     * Checks the default maximum number of elements
+     * @param strNbElementsMax the submitted value
+     * @return the key of the error message, or null when the value is a strictly positive number
+     */
+    private static String getNbElementsMaxError( String strNbElementsMax )
+    {
+        if ( StringUtils.isBlank( strNbElementsMax ) )
+        {
+            return WhatsNewConstants.MESSAGE_MANDATORY_PORTLET_NB_ELEMENTS_MAX;
+        }
+
+        if ( !StringUtils.isNumeric( strNbElementsMax ) )
+        {
+            return WhatsNewConstants.MESSAGE_NOT_VALID_PORTLET_NB_ELEMENTS_MAX;
+        }
+
+        if ( NumberUtils.toInt( strNbElementsMax, 0 ) <= 0 )
+        {
+            return WhatsNewConstants.MESSAGE_NEGATIVE_PORTLET_NB_ELEMENTS_MAX;
+        }
+
+        return null;
     }
 }

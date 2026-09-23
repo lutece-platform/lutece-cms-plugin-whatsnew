@@ -36,9 +36,9 @@
 <@formGroup labelKey='#i18n{whatsnew.create_portlet_whatsnew.labelDisplayOrder}' mandatory=true>
 	<@radioButton orientation='inline' id='display_order_date' name='display_order' value='${display_order_date}' labelKey='#i18n{whatsnew.portlet.order.timesequential}' checked=(getName('display_order',list_param_default_values) == display_order_date?string) />
 	<@radioButton orientation='inline' id='display_order_alpha' name='display_order' value='${display_order_alpha}' labelKey='#i18n{whatsnew.portlet.order.alphabetical}' checked=(getName('display_order',list_param_default_values) == display_order_alpha?string) />
-	<@select id='display_order_asc_desc' name='display_order_asc_desc' default_value='${getName("display_order_asc_desc",list_param_default_values)}'>
-		<@option value='${display_order_asc}' label='#i18n{whatsnew.portlet.order.ascending}' />
-		<@option value='${display_order_desc}' label='#i18n{whatsnew.portlet.order.descending}' />
+	<@select id='display_order_asc_desc' name='display_order_asc_desc'>
+		<@option value='${display_order_asc}' label='#i18n{whatsnew.portlet.order.ascending}' selected=(getName('display_order_asc_desc',list_param_default_values) == display_order_asc?string) />
+		<@option value='${display_order_desc}' label='#i18n{whatsnew.portlet.order.descending}' selected=(getName('display_order_asc_desc',list_param_default_values) == display_order_desc?string) />
 	</@select>
 </@formGroup>
 <@formGroup>

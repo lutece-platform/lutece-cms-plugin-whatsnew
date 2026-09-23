@@ -1,31 +1,32 @@
-<div class="portlet append-bottom -lutece-border-radius" id="portlet_id_${portlet.id}">
+<@cTpl>
+<@cBlock class='portlet append-bottom -lutece-border-radius' id='portlet_id_${portlet.id}'>
 	<#if portlet.displayPortletTitle != 1>
-		<h3 class="portlet-header">${portlet.name}</h3>
-		<br />
+		<@cTitle level=3 class='portlet-header'>${portlet.name}</@cTitle>
 	</#if>
-	<div class="portlet-content">
+	<@cBlock class='portlet-content'>
 		<#if total == 0>
-			<i>#i18n{whatsnew.portlet.noElement}</i>
+			<@cText><@cInline type='i'>#i18n{whatsnew.portlet.noElement}</@cInline></@cText>
 		<#else>
-			<ul>
+			<@chList>
 				<#list elements as element>
-					<li>
-						<b><a href="${site_path}${element.url}" target="_top">${element.title}</a></b><br />
-						<i>${element.type}</i><br />
-						<#if element.description?has_content>${element.description}<br /></#if>
-						${element.date_update}<br /><br />
-					</li>
+					<@chItem class='mb-3'>
+						<@cLink href='${site_path}${element.url}' label='${element.title}' target='_top' class='fw-bold' />
+						<@cText class='mb-0'><@cInline type='i'>${element.type}</@cInline></@cText>
+						<#if element.description?has_content><@cText class='mb-0'>${element.description}</@cText></#if>
+						<@cText class='mb-0'>${element.date_update}</@cText>
+					</@chItem>
 				</#list>
-			</ul>
-			<div class="text-end">
+			</@chList>
+			<@cBlock class='text-end'>
 				<#if min_display gt 1>
-					<a href="${site_path}?page_id=${portlet.pageId}&amp;${min_display_parameter}=${previous_min}#portlet_id_${portlet.id}" target="_top">#i18n{whatsnew.portlet.previous}</a>
+					<@cLink href='${site_path}?page_id=${portlet.pageId}&amp;${min_display_parameter}=${previous_min}#portlet_id_${portlet.id}' label='#i18n{whatsnew.portlet.previous}' target='_top' />
 				</#if>
 				<#if min_display == max_display>[${min_display} / ${total}]<#else>[${min_display}-${max_display} / ${total}]</#if>
 				<#if max_display lt total>
-					<a href="${site_path}?page_id=${portlet.pageId}&amp;${min_display_parameter}=${next_min}#portlet_id_${portlet.id}" target="_top">#i18n{whatsnew.portlet.next}</a>
+					<@cLink href='${site_path}?page_id=${portlet.pageId}&amp;${min_display_parameter}=${next_min}#portlet_id_${portlet.id}' label='#i18n{whatsnew.portlet.next}' target='_top' />
 				</#if>
-			</div>
+			</@cBlock>
 		</#if>
-	</div>
-</div>
+	</@cBlock>
+</@cBlock>
+</@cTpl>
