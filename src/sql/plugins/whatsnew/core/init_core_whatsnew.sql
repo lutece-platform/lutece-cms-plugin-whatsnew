@@ -27,3 +27,11 @@ INSERT INTO core_user_role (role_key,id_user) VALUES ('whatsnew_manager',2);
 -- Init  table core_admin_dashboard
 --
 INSERT INTO core_admin_dashboard(dashboard_name, dashboard_column, dashboard_order) VALUES('whatsNewAdminDashboardComponent', 1, 1);
+
+--
+-- FreeMarker templates available for the whatsnew portlets (4.0.0), registered in the core (Section Template Management feature)
+--
+-- changeset whatsnew:init_core_whatsnew.sql-rev1.sql
+-- preconditions onFail:MARK_RAN onError:WARN
+-- precondition-sql-check expectedResult:0 SELECT COUNT(*) FROM core_portlet_template WHERE id_portlet_type = 'WHATS_NEW_PORTLET'
+INSERT INTO core_portlet_template (id_portlet_type, description, template_path) VALUES ('WHATS_NEW_PORTLET', 'Défaut', 'skin/plugins/whatsnew/portlet/whatsnew_portlet.html');
