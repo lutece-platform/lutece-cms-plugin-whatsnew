@@ -12,22 +12,23 @@
 	<@boxHeader title='#i18n{whatsnew.modify_portlet_whatsnew.labelListModeratedPages}' />
 	<@boxBody>
 		<#if elements_list?has_content>
-			<@table condensed=false>
-				<tr>
-					<th>#i18n{whatsnew.modify_portlet_whatsnew.columnName}</th>
-					<th>#i18n{whatsnew.modify_portlet_whatsnew.columnDescription}</th>
-					<th>#i18n{whatsnew.modify_portlet_whatsnew.columnDateUpdate}</th>
-				</tr>
+			<@table condensed=false headBody=true>
+				<@tr>
+					<@th>#i18n{whatsnew.modify_portlet_whatsnew.columnName}</@th>
+					<@th>#i18n{whatsnew.modify_portlet_whatsnew.columnDescription}</@th>
+					<@th>#i18n{whatsnew.modify_portlet_whatsnew.columnDateUpdate}</@th>
+				</@tr>
+				<@tableHeadBodySeparator />
 				<#list elements_list as element>
-					<tr>
-						<td><@checkBox orientation='switch' id='moderated_page_${element.pageId}' name='moderated_page_${element.pageId}' value='1' labelKey='${element.title!}' checked=isModerated( moderated_elements_list, element ) /></td>
-						<td>${element.description!}</td>
-						<td>${element.dateUpdate?date}</td>
-					</tr>
+					<@tr>
+						<@td><@checkBox orientation='switch' id='moderated_page_${element.pageId?c}' name='moderated_page_${element.pageId?c}' value='1' labelKey='${element.title!}' checked=isModerated( moderated_elements_list, element ) /></@td>
+						<@td>${element.description!}</@td>
+						<@td>${element.dateUpdate?date}</@td>
+					</@tr>
 				</#list>
 			</@table>
 		<#else>
-			<@empty title='#i18n{portal.util.labelNoItem}' subtitle=' ' />
+			<@empty title='#i18n{portal.util.labelNoItem}' iconName='file-off' subtitle=' ' />
 		</#if>
 	</@boxBody>
 </@box>

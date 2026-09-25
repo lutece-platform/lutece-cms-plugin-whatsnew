@@ -39,7 +39,6 @@ import fr.paris.lutece.plugins.whatsnew.service.portlet.WhatsNewPortletService;
 import fr.paris.lutece.plugins.whatsnew.utils.constants.WhatsNewConstants;
 import fr.paris.lutece.plugins.whatsnew.utils.sort.WhatsNewComparator;
 import fr.paris.lutece.portal.business.portlet.PortletHtmlContent;
-import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
 import fr.paris.lutece.util.date.DateUtil;
 import jakarta.enterprise.inject.spi.CDI;
@@ -66,8 +65,7 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class WhatsNewPortlet extends PortletHtmlContent
 {
-    private static final String TEMPLATE_PORTLET = "skin/plugins/whatsnew/portlet/whatsnew_portlet.html";
-    private static final String MARK_PORTLET = "portlet";
+    private static final String TEMPLATE_PORTLET_DEFAULT = "skin/plugins/whatsnew/portlet/whatsnew_portlet.html";
     private static final String MARK_SITE_PATH = "site_path";
     private static final String MARK_ELEMENTS = "elements";
     private static final String MARK_TOTAL = "total";
@@ -244,7 +242,8 @@ public class WhatsNewPortlet extends PortletHtmlContent
     }
 
     /**
-     * Returns the HTML content of the portlet: the elements of the period, sorted and paginated
+     * Returns the HTML content of the portlet: the elements of the period, sorted and paginated, rendered with the FreeMarker template chosen for the
+     * portlet among the templates registered for the portlet type in the core (Section Template Management feature)
      * @param request The HTTP Servlet request
      * @return The HTML content of this portlet
      */
@@ -271,8 +270,8 @@ public class WhatsNewPortlet extends PortletHtmlContent
             listDisplayed.add( element );
         }
 
-        Map<String, Object> model = new HashMap<>( );
-        model.put( MARK_PORTLET, this );
+        // portlet, portlet_id, device_class, portlet_name (only when the title is displayed)
+        Map<String, Object> model = createPortletModel( );
         model.put( MARK_SITE_PATH, AppPathService.getPortalUrl( ) );
         model.put( MARK_ELEMENTS, listDisplayed );
         model.put( MARK_TOTAL, nTotal );
@@ -282,7 +281,8 @@ public class WhatsNewPortlet extends PortletHtmlContent
         model.put( MARK_PREVIOUS_MIN, Math.max( nMinDisplay - _nNbElementsMax, 1 ) );
         model.put( MARK_NEXT_MIN, nMaxDisplay + 1 );
 
-        return AppTemplateService.getTemplate( TEMPLATE_PORTLET, locale, model ).getHtml( );
+        // template chosen for the portlet (core_portlet.id_template), the default one otherwise
+        return renderTemplate( request, TEMPLATE_PORTLET_DEFAULT, model );
     }
 
     /**
