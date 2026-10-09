@@ -41,7 +41,7 @@ import fr.paris.lutece.plugins.whatsnew.utils.sort.WhatsNewComparator;
 import fr.paris.lutece.portal.business.portlet.Portlet;
 import fr.paris.lutece.util.xml.XmlUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Timestamp;
 

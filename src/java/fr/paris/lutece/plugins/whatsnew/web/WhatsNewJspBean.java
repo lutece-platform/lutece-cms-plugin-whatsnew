@@ -48,7 +48,7 @@ import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
 import fr.paris.lutece.util.ReferenceItem;
 import fr.paris.lutece.util.ReferenceList;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -75,7 +75,7 @@ public class WhatsNewJspBean extends PluginAdminPageJspBean
         if ( !RBACService.isAuthorized( WhatsNew.RESOURCE_TYPE, RBAC.WILDCARD_RESOURCES_ID,
                     WhatsNewResourceIdService.PERMISSION_MANAGE_ADVANCED_PARAMETERS, getUser(  ) ) )
         {
-            throw new AccessDeniedException(  );
+            throw new AccessDeniedException( "User is not authorized to manage whatsnew advanced parameters" );
         }
 
         Plugin plugin = PluginService.getPlugin( WhatsNewPlugin.PLUGIN_NAME );
